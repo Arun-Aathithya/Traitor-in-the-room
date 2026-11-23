@@ -19,6 +19,10 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:6px 8px;
 .pill{font-size:11px;padding:2px 8px;border-radius:999px;background:rgba(255,176,32,.16);color:var(--amb)}.pill.ok{background:rgba(61,220,151,.15);color:var(--ok)}.pill.bad{background:rgba(255,92,108,.15);color:var(--bad)}
 .bars{display:flex;align-items:flex-end;gap:4px;height:90px}.bars div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;min-width:0}.bars i{display:block;background:var(--ok)}.bars i.t{background:var(--bad)}
 .err{color:var(--bad)}
+.map{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.stn{background:#0f1420;border:1px solid var(--line);border-radius:10px;padding:8px;min-height:84px}.stn b{font-size:12px;color:var(--mut);display:block;margin-bottom:4px}
+.chip{display:inline-block;margin:2px;padding:2px 7px;border-radius:999px;font-size:12px;font-weight:600;color:#0B0F17;border:2px solid transparent}.chip.t{border-color:var(--bad);box-shadow:0 0 0 1px var(--bad)}.chip.x{opacity:.35;text-decoration:line-through}
+.ev{display:flex;gap:8px;padding:3px 6px;border-radius:6px}.ev.cur{background:rgba(255,176,32,.14)}.ev.fut{opacity:.4}.ev i{font-style:normal;color:var(--mut);font-family:ui-monospace,monospace;min-width:44px}.evs{max-height:300px;overflow:auto}
+input[type=range]{flex:1;min-width:140px;padding:0}
 </style></head><body><div class="wrap" id="app"></div>
 <script>
 const $=s=>document.querySelector(s),esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -26,12 +30,12 @@ let TOK=null;try{TOK=sessionStorage.getItem('adm')}catch(e){}
 let tab='overview',data={},err='',timer=0;
 async function api(path,opt){const r=await fetch('/admin/api/'+path,{...(opt||{}),headers:{authorization:'Bearer '+TOK,'content-type':'application/json'}});const j=await r.json().catch(()=>({error:'Bad reply.'}));if(!r.ok)throw new Error(j.error||('Error '+r.status));return j}
 async function load(){err='';try{if(tab==='overview')data.ov=await api('overview');else if(tab==='reports')data.rp=await api('reports?status='+(data.rs||'open'));else if(tab==='accounts')data.ac=await api('accounts');
-    else if(tab==='bans')data.bn=await api('bans');else if(tab==='live')data.lv=await api('rooms')}catch(e){err=e.message;if(/token/i.test(err)){TOK=null;try{sessionStorage.removeItem('adm')}catch(x){}}}render()}
+    else if(tab==='bans')data.bn=await api('bans');else if(tab==='live')data.lv=await api('rooms');else if(tab==='replays')data.rl=await api('replays')}catch(e){err=e.message;if(/token/i.test(err)){TOK=null;try{sessionStorage.removeItem('adm')}catch(x){}}}render()}
 const date=t=>t?String(t).replace('T',' ').slice(0,16):'';
-function login(){return `<div class="card" style="max-width:380px;margin:60px auto"><h1>Creator dashboard</h1><div class="mut" style="margin:6px 0 10px">Enter the ADMIN_TOKEN the server was started with. It is kept only for this browser tab.</div><div class="row"><input type="password" id="tk" class="grow" placeholder="Admin token" autocomplete="off"><button class="on" id="go">Sign in</button></div>${err?`<div class="err" style="margin-top:8px">${esc(err)}</div>`:''}</div>`}
+function login(){return `<div class="card" style="max-width:380px;margin:60px auto"><h1>Creator dashboard</h1><div class="mut" style="margin:6px 0 10px">There is no username. Paste the password shown in the server window (also saved in admin-token.txt). Kept only for this browser tab.</div><div class="row"><input type="password" id="tk" class="grow" placeholder="Admin token" autocomplete="off"><button class="on" id="go">Sign in</button></div>${err?`<div class="err" style="margin-top:8px">${esc(err)}</div>`:''}</div>`}
 function overview(){const o=data.ov;if(!o)return '<div class="card mut">Loading...</div>';const t=o.totals,mx=Math.max(1,...o.days.map(d=>d.matches));
   const S=(k,v,s)=>`<div class="stat"><span class="mut">${k}</span><b>${esc(v)}</b>${s?`<span class="mut">${esc(s)}</span>`:''}</div>`;
-  return `<div class="grid">${S('Players online now',o.live.players,o.live.rooms+' rooms, '+o.live.inMatch+' in a match')}${S('Matches played',t.matches,'avg '+t.avgMinutes+' min, '+t.avgHumans+' humans')}${S('Crew win rate',t.crewWinPct+'%','traitors '+(t.matches?100-t.crewWinPct:0)+'%')}${S('Tasks finished',t.tasksPct+'%','average per match')}${S('Sabotages / match',t.sabsPerMatch,t.meetingsPerMatch+' meetings / match')}${S('Fast-and-loud mode',(o.mode.fast)+' matches','quick mode '+t.quickPct+'%')}${S('Attacks / match',t.attacksPerMatch,t.savesPerMatch+' saved, '+t.elimsPerMatch+' eliminated, roles on in '+t.rolesPct+'%')}${S('Accounts',o.accounts.total,o.accounts.players+' have played, '+o.accounts.banned+' suspended')}${S('Open reports',o.reports.open,o.reports.total+' total')}${S('Server','v'+o.version,o.rss+' MB, up '+Math.round(o.up/3600*10)/10+' h')}</div>
+  return `<div class="grid">${S('Players online now',o.live.players,o.live.rooms+' rooms, '+o.live.inMatch+' in a match')}${S('Matches played',t.matches,'avg '+t.avgMinutes+' min, '+t.avgHumans+' humans')}${S('Crew win rate',t.crewWinPct+'%','traitors '+(t.matches?100-t.crewWinPct:0)+'%')}${S('Tasks finished',t.tasksPct+'%','average per match')}${S('Sabotages / match',t.sabsPerMatch,t.meetingsPerMatch+' meetings / match')}${S('Fast-and-loud mode',(o.mode.fast)+' matches','quick mode '+t.quickPct+'%')}${S('Attacks / match',t.attacksPerMatch,t.savesPerMatch+' saved, '+t.elimsPerMatch+' eliminated, roles on in '+t.rolesPct+'%')}${S('Accounts',o.accounts.total,o.accounts.players+' have played, '+o.accounts.banned+' suspended')}${S('Credits',o.economy.held,o.economy.earned+' earned, '+o.economy.spent+' spent, '+o.economy.owners+' players own items')}${S('Open reports',o.reports.open,o.reports.total+' total')}${S('Server','v'+o.version,o.rss+' MB, up '+Math.round(o.up/3600*10)/10+' h')}</div>
   <div class="card"><h2>Matches per day (last 14 days)</h2><div class="bars">${o.days.map(d=>`<div title="${esc(d.date)}: ${d.matches} (crew ${d.crew}, traitors ${d.traitor})"><i class="t" style="height:${d.traitor/mx*80}px"></i><i style="height:${d.crew/mx*80}px"></i></div>`).join('')}</div><div class="mut" style="margin-top:6px">Green = crew wins, red = traitor wins. ${esc(o.days[0].date)} to ${esc(o.days[o.days.length-1].date)}.</div></div>
   <div class="card"><h2>How matches end</h2>${Object.entries(o.why).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="row sp"><span>${esc(k)}</span><b>${v}</b></div>`).join('')||'<div class="mut">No matches yet.</div>'}<div style="margin-top:8px"><a href="#" id="csv" style="color:var(--amb)">Download matches.csv</a></div></div>`}
 function reports(){const r=data.rp;if(!r)return '<div class="card mut">Loading...</div>';const st=data.rs||'open';
@@ -40,24 +44,72 @@ function reports(){const r=data.rp;if(!r)return '<div class="card mut">Loading..
     <div class="msg">${esc(x.txt)}</div><div class="mut">${x.by==='host'?'Removed by the host':'Reported by '+(x.by||[]).length+' player(s)'} - ${x.acct?'account '+esc(x.acct):'guest'}</div>
     <div class="row" style="margin-top:8px"><button data-ra="dismiss" data-id="${esc(x.id)}">Dismiss</button><button data-ra="reviewed" data-id="${esc(x.id)}">Mark reviewed</button>${x.acct?`<button class="bad" data-ra="ban_account" data-id="${esc(x.id)}">Suspend account</button>`:''}${x.did?`<button class="bad" data-ra="ban_device" data-id="${esc(x.id)}">Suspend device</button>`:''}${x.status!=='open'?`<button data-ra="reopen" data-id="${esc(x.id)}">Reopen</button>`:''}</div></div>`).join(''):'<div class="card mut">Nothing here.</div>')}
 function accounts(){const a=data.ac;if(!a)return '<div class="card mut">Loading...</div>';
-  return `<div class="card"><table><tr><th>Name</th><th>Games</th><th>Wins</th><th>Tasks</th><th>Created</th><th></th></tr>${a.accounts.map(u=>`<tr><td>${esc(u.name)} ${u.banned?'<span class="pill bad">suspended</span>':''}</td><td>${u.games}</td><td>${u.wins}</td><td>${u.tasks}</td><td>${esc(date(new Date(u.created).toISOString()))}</td><td><button data-ba="${esc(u.key)}" data-on="${u.banned?0:1}" class="${u.banned?'':'bad'}">${u.banned?'Restore':'Suspend'}</button></td></tr>`).join('')||'<tr><td colspan="6" class="mut">No accounts yet.</td></tr>'}</table></div>`}
+  return `<div class="card"><table><tr><th>Name</th><th>Games</th><th>Wins</th><th>Tasks</th><th>Credits</th><th>Items</th><th>Created</th><th></th></tr>${a.accounts.map(u=>`<tr><td>${esc(u.name)} ${u.banned?'<span class="pill bad">suspended</span>':''}</td><td>${u.games}</td><td>${u.wins}</td><td>${u.tasks}</td><td>${u.credits}</td><td>${u.items}</td><td>${esc(date(new Date(u.created).toISOString()))}</td><td><button data-ba="${esc(u.key)}" data-on="${u.banned?0:1}" class="${u.banned?'':'bad'}">${u.banned?'Restore':'Suspend'}</button></td></tr>`).join('')||'<tr><td colspan="8" class="mut">No accounts yet.</td></tr>'}</table></div>`}
 function bans(){const b=data.bn;if(!b)return '<div class="card mut">Loading...</div>';const L=(k,o)=>Object.entries(o).map(([v,i])=>`<tr><td>${esc(v)}</td><td>${esc(date(i.ts))}</td><td>${esc(i.note)}</td><td><button data-ub="${k}" data-v="${esc(v)}">Restore</button></td></tr>`).join('');
   return `<div class="card"><h2>Suspended accounts</h2><table><tr><th>Account</th><th>Since</th><th>Note</th><th></th></tr>${L('acct',b.accounts)||'<tr><td colspan="4" class="mut">None.</td></tr>'}</table></div><div class="card"><h2>Suspended devices</h2><div class="mut" style="margin-bottom:6px">Device IDs come from reports. A suspended device cannot create or join rooms.</div><table><tr><th>Device</th><th>Since</th><th>Note</th><th></th></tr>${L('did',b.devices)||'<tr><td colspan="4" class="mut">None.</td></tr>'}</table></div>`}
 function live(){const l=data.lv;if(!l)return '<div class="card mut">Loading...</div>';return `<div class="card"><table><tr><th>Room</th><th>Phase</th><th>Humans</th><th>Online</th><th>Bots</th><th>Time left</th></tr>${l.rooms.map(r=>`<tr><td>${esc(r.code)}</td><td>${esc(r.phase)}</td><td>${r.humans}</td><td>${r.online}</td><td>${r.bots}</td><td>${r.left==null?'':Math.floor(r.left/60)+':'+String(r.left%60).padStart(2,'0')}</td></tr>`).join('')||'<tr><td colspan="6" class="mut">No rooms.</td></tr>'}</table><div class="mut" style="margin-top:6px">Roles and chat are never shown here.</div></div>`}
+/* ---- read-only replay of finished matches (no chat, no names: players are P1, P2...) ---- */
+const CLSN={detective:'Detective',engineer:'Engineer',guardian:'Guardian',scientist:'Scientist',scout:'Scout',medic:'Medic'};
+let RV=null,rvTimer=0;
+const pl=(o,i)=>'P'+(+i+1),rl=(o,i)=>{const p=o.P[i];return p?pl(o,i)+(p.bot?' (bot)':'')+' '+(p.role==='traitor'?'traitor':'crew')+(p.cls?' '+(CLSN[p.cls]||''):''):'?'};
+const sn=(o,k)=>esc((o.stn||[])[k]||'?'),tm=t=>Math.floor(t/60)+':'+String(Math.floor(t%60)).padStart(2,'0');
+function evText(o,e){const a=pl(o,e.a),b=pl(o,e.b);switch(e.k){
+  case 'pos':return 'Positions updated';case 'task':return a+(e.x&&e.x[1]?' finished a crew task':' finished a decoy task')+' at '+sn(o,e.x&&e.x[0]);
+  case 'pair':return a+' and '+b+' worked together at '+sn(o,e.x);case 'sab':return a+' sabotaged the reactor from '+sn(o,e.x);case 'fix':return 'Reactor made safe';
+  case 'meet':return (e.a==null?'A':a)+' called a meeting';case 'vote':return 'Votes: '+(e.x||[]).map(v=>pl(o,v[0])+(v[1]==='skip'?' skip':' > '+pl(o,v[1]))).join(', ');
+  case 'eject':return e.a==null?'No one was ejected':a+' was ejected ('+(o.P[e.a]?o.P[e.a].role:'?')+')';case 'atk':return a+' attacked '+b+' at '+sn(o,e.x);case 'block':return a+' attacked '+b+' but a shield held';
+  case 'save':return a+' saved '+b;case 'elim':return a+' was eliminated at '+sn(o,e.x);case 'out':return a+' left the match';case 'ab':return a+' used '+esc(CLSN[e.x]||'an ability')+(e.b!=null?' on '+b:'');default:return esc(e.k)}}
+function rvState(o,i){const n=o.P.length,pos=Array(n).fill(-1),al=Array(n).fill(true);let done=0,sab=false;
+  for(let k=0;k<=i&&k<o.rec.length;k++){const e=o.rec[k];
+    if(e.k==='pos'){e.s.forEach((v,j)=>{pos[j]=v;if(v<0)al[j]=false})}
+    else if(e.k==='task'){if(e.x&&e.x[1])done++;if(e.x)pos[e.a]=e.x[0]}
+    else if(e.k==='pair'){pos[e.a]=pos[e.b]=e.x;done++}
+    else if(e.k==='sab'){sab=true;if(e.x!=null)pos[e.a]=e.x}else if(e.k==='fix')sab=false;
+    else if(e.k==='atk'||e.k==='block'){pos[e.a]=pos[e.b]=e.x}
+    else if(e.k==='elim'||e.k==='out'){al[e.a]=false}
+    else if(e.k==='eject'&&e.a!=null)al[e.a]=false}
+  return{pos,al,done,sab}}
+function rvBody(){const o=RV.o,i=RV.i,st=rvState(o,i),e=o.rec[i]||{t:0},stn=o.stn||[];
+  const chips=k=>o.P.map((p,j)=>st.pos[j]===k&&st.al[j]?`<span class="chip ${p.role==='traitor'?'t':''}" style="background:${esc(p.col)}" title="${esc(rl(o,j))}">${pl(o,j)}</span>`:'').join('');
+  const out=o.P.map((p,j)=>st.al[j]?'':`<span class="chip x" style="background:${esc(p.col)}">${pl(o,j)}</span>`).join('');
+  const from=Math.max(0,i-6),to=Math.min(o.rec.length,i+8);
+  return `<div class="row sp"><b>${tm(e.t||0)} of ${tm(o.R.match)}</b><span class="mut">event ${i+1} of ${o.rec.length}</span>${st.sab?'<span class="pill bad">Reactor unsafe</span>':''}</div>
+  <div class="row"><span class="mut">Crew tasks</span><div style="flex:1;height:8px;background:#0f1420;border-radius:6px;overflow:hidden"><div style="height:8px;width:${o.total?Math.min(100,st.done/o.total*100):0}%;background:var(--ok)"></div></div><span class="mut">${Math.min(st.done,o.total)} of ${o.total}</span></div>
+  <div class="map">${stn.map((n,k)=>`<div class="stn"><b>${esc(n)}</b>${chips(k)}</div>`).join('')}<div class="stn"><b>Out</b>${out}</div></div>
+  <div class="evs">${o.rec.slice(from,to).map((x,k)=>`<div class="ev ${from+k===i?'cur':from+k>i?'fut':''}"><i>${tm(x.t)}</i><span>${evText(o,x)}</span></div>`).join('')}</div>`}
+function rvPaint(){const b=$('#rvbody'),r=$('#rvr');if(!RV||!b)return;b.innerHTML=rvBody();if(r&&+r.value!==RV.i)r.value=RV.i;const pb=$('#rvp');if(pb)pb.textContent=RV.play?'Pause':'Play'}
+function rvStop(){clearInterval(rvTimer);rvTimer=0;if(RV)RV.play=false}
+function rvTick(){if(!RV)return rvStop();if(RV.i>=RV.o.rec.length-1){rvStop();rvPaint();return}RV.i++;rvPaint()}
+function rvPlay(){if(RV.play){rvStop();rvPaint();return}if(RV.i>=RV.o.rec.length-1)RV.i=0;RV.play=true;clearInterval(rvTimer);rvTimer=setInterval(rvTick,Math.max(80,700/RV.speed));rvPaint()}
+function replays(){if(RV){const o=RV.o;return `<div class="row sp"><button id="rvx">Back to the list</button><span class="mut">Read only. Chat is never recorded and players are shown as P1, P2...</span></div>
+  <div class="card"><div class="row sp"><h2>${o.w==='crew'?'Crew won':'Traitors won'}: ${esc(o.why)}</h2><span class="mut">${esc(date(o.ts))}, ${o.n} players (${o.humans} human), ${o.classic?'Classic':'Fast and loud'}, ${tm(o.R.match)} match, ${o.R.tasks} tasks each</span></div>
+  <div class="row" style="margin-bottom:8px">${o.P.map((p,j)=>`<span class="chip ${p.role==='traitor'?'t':''}" style="background:${esc(p.col)}">${esc(rl(o,j))}</span>`).join('')}</div>
+  <div class="row" style="margin-bottom:8px"><button id="rvs">Start</button><button id="rvp">Play</button><button id="rvf">Step</button><button id="rvb">Back</button><input type="range" id="rvr" min="0" max="${Math.max(0,o.rec.length-1)}" value="${RV.i}"><span class="row">${[1,2,4].map(x=>`<button data-sp="${x}" class="${RV.speed===x?'on':''}">${x}x</button>`).join('')}</span></div>
+  <div id="rvbody">${rvBody()}</div></div>`}
+  const r=data.rl;if(!r)return '<div class="card mut">Loading...</div>';
+  return `<div class="card"><div class="mut" style="margin-bottom:6px">Finished matches only. The latest matches are kept; older ones are rotated out automatically.</div><table><tr><th>When</th><th>Result</th><th>Why</th><th>Players</th><th>Length</th><th></th></tr>${r.replays.map(x=>`<tr><td>${esc(date(x.ts))}</td><td><span class="pill ${x.w==='crew'?'ok':'bad'}">${x.w==='crew'?'Crew':'Traitors'}</span></td><td>${esc(x.why)}</td><td>${x.n} (${x.humans} human)</td><td>${esc(tm(x.secs))} of ${esc(tm(x.len||0))}, ${x.tasks||3} tasks</td><td><button data-rp="${esc(x.id)}">Watch</button></td></tr>`).join('')||'<tr><td colspan="6" class="mut">No recorded matches yet.</td></tr>'}</table></div>`}
 function render(){const app=$('#app');if(!TOK){app.innerHTML=login();return}
-  const T=[['overview','Overview'],['reports','Reports'],['accounts','Accounts'],['bans','Suspensions'],['live','Live rooms']];
-  app.innerHTML=`<div class="row sp"><h1>Creator dashboard</h1><span class="row"><button id="rf">Refresh</button><button id="out">Sign out</button></span></div><div class="row">${T.map(t=>`<button class="${tab===t[0]?'on':''}" data-tab="${t[0]}">${t[1]}</button>`).join('')}</div>${err?`<div class="card err">${esc(err)}</div>`:''}${({overview,reports,accounts,bans,live})[tab]()}`}
+  const T=[['overview','Overview'],['reports','Reports'],['accounts','Accounts'],['bans','Suspensions'],['replays','Replays'],['live','Live rooms']];
+  app.innerHTML=`<div class="row sp"><h1>Creator dashboard</h1><span class="row"><button id="rf">Refresh</button><button id="out">Sign out</button></span></div><div class="row">${T.map(t=>`<button class="${tab===t[0]?'on':''}" data-tab="${t[0]}">${t[1]}</button>`).join('')}</div>${err?`<div class="card err">${esc(err)}</div>`:''}${({overview,reports,accounts,bans,live,replays})[tab]()}`}
 document.addEventListener('click',async e=>{const b=e.target.closest('button,a');if(!b)return;const d=b.dataset;
   try{if(b.id==='go'){TOK=($('#tk').value||'').trim();try{sessionStorage.setItem('adm',TOK)}catch(x){}await load();return}
     if(b.id==='out'){TOK=null;try{sessionStorage.removeItem('adm')}catch(x){}data={};render();return}
     if(b.id==='rf'){await load();return}
     if(b.id==='csv'){e.preventDefault();const r=await fetch('/admin/api/matches.csv',{headers:{authorization:'Bearer '+TOK}});const u=URL.createObjectURL(await r.blob()),a=document.createElement('a');a.href=u;a.download='matches.csv';a.click();return}
-    if(d.tab){tab=d.tab;data[({overview:'ov',reports:'rp',accounts:'ac',bans:'bn',live:'lv'})[tab]]=null;render();await load();return}
+    if(d.rp){const o=await api('replays/'+d.rp);RV={o,i:0,play:false,speed:1};render();return}
+    if(b.id==='rvx'){rvStop();RV=null;render();return}
+    if(b.id==='rvp'){rvPlay();return}
+    if(b.id==='rvs'){rvStop();RV.i=0;rvPaint();return}
+    if(b.id==='rvf'){rvStop();RV.i=Math.min(RV.o.rec.length-1,RV.i+1);rvPaint();return}
+    if(b.id==='rvb'){rvStop();RV.i=Math.max(0,RV.i-1);rvPaint();return}
+    if(d.sp){RV.speed=+d.sp;if(RV.play){clearInterval(rvTimer);rvTimer=setInterval(rvTick,Math.max(80,700/RV.speed))}render();return}
+    if(d.tab){rvStop();if(d.tab!=='replays')RV=null;tab=d.tab;data[({overview:'ov',reports:'rp',accounts:'ac',bans:'bn',live:'lv',replays:'rl'})[tab]]=null;render();await load();return}
     if(d.rs){data.rs=d.rs;data.rp=null;render();await load();return}
     if(d.ra){await api('reports/'+d.id,{method:'POST',body:JSON.stringify({action:d.ra})});await load();return}
     if(d.ba){await api('ban',{method:'POST',body:JSON.stringify({kind:'acct',value:d.ba,on:d.on==='1'})});await load();return}
     if(d.ub){await api('ban',{method:'POST',body:JSON.stringify({kind:d.ub,value:d.v,on:false})});await load();return}
   }catch(x){err=x.message;render()}});
+document.addEventListener('input',e=>{if(e.target.id==='rvr'&&RV){rvStop();RV.i=+e.target.value;rvPaint()}});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='tk')$('#go').click()});
 clearInterval(timer);timer=setInterval(()=>{if(TOK&&(tab==='overview'||tab==='live'))load()},15000);
 if(TOK)load();else render();

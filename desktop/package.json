@@ -1,0 +1,34 @@
+{
+  "name": "traitor-in-the-room-desktop",
+  "version": "0.8.0",
+  "description": "Traitor in the Room for Windows: play it, or host it for friends on your Wi-Fi",
+  "main": "main.js",
+  "author": "Traitor in the Room",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "prepare-game": "node prepare.js",
+    "start": "npm run prepare-game && electron .",
+    "dist": "npm run prepare-game && electron-builder --win nsis"
+  },
+  "dependencies": { "ws": "^8.18.0" },
+  "devDependencies": { "electron": "^33.2.0", "electron-builder": "^25.1.8" },
+  "build": {
+    "appId": "com.traitorintheroom.game",
+    "productName": "Traitor in the Room",
+    "directories": { "output": "dist", "buildResources": "build" },
+    "files": ["main.js", "game/**/*", "package.json"],
+    "asar": true,
+    "win": { "target": [{ "target": "nsis", "arch": ["x64"] }], "icon": "build/icon.png" },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Traitor in the Room",
+      "artifactName": "Traitor-in-the-Room-Setup-${version}.exe",
+      "deleteAppDataOnUninstall": false
+    }
+  }
+}

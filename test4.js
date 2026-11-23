@@ -15,8 +15,8 @@ async function play(cs){cs[0].send({t:'start'});await sleep(200);cs.forEach(c=>c
 (async()=>{
  await new Promise(r=>srv.listen(8098,r));
  /* --- catalog and dealing */
- ok(CT.length===14&&TT.length===10,'task catalog: 14 crew tasks and 10 traitor tasks');
- ok(new Set([...CT,...TT].map(t=>t.type)).size>=11,'at least 11 different task types exist');
+ ok(CT.length===16&&TT.length===8,'task catalog: 16 crew tasks and 8 traitor tasks');
+ ok(new Set([...CT,...TT].map(t=>t.type)).size>=8,'at least 8 different task types exist');
  const cs=await room(6);const [A,B,C,D,E,F]=cs;
  /* lobby chat, report, host remove */
  A.send({t:'say',txt:'hello lobby'});B.send({t:'say',txt:'rude: you are stupid'});await sleep(150);
@@ -40,7 +40,7 @@ async function play(cs){cs[0].send({t:'start'});await sleep(200);cs.forEach(c=>c
  for(const c of cs.slice(0,5)){const ty=c.v.mine.map(t=>t.type);ok(ty.length===3&&new Set(ty).size===3,'3 different task types dealt to '+me(c).name);
    if(me(c).dev==='Phone')ok(!ty.some(t=>t==='drag'||t==='scan'),'phone player gets no mouse-only tasks')}
  /* solo vs pair choice on the same player */
- A.send({t:'task_start',i:0});await sleep(3300);A.send({t:'task_done',i:0});await sleep(150);ok(A.v.mine[0].done,'task 1 done alone');
+ A.send({t:'task_start',i:0});await sleep(5800);A.send({t:'task_done',i:0});await sleep(150);ok(A.v.mine[0].done,'task 1 done alone');
  A.send({t:'pair_start',i:1});await sleep(60);B.send({t:'pair_join',a:A.v.you});await sleep(100);
  ok(A.v.mypair&&A.v.mypair.partner&&A.v.mypair.task===A.v.mine[1].name,'task 2 done with a partner (any task can be paired)');
  A.send({t:'pair_hold'});B.send({t:'pair_hold'});await sleep(3100);A.send({t:'pair_done'});B.send({t:'pair_done'});await sleep(200);
@@ -57,7 +57,7 @@ async function play(cs){cs[0].send({t:'start'});await sleep(200);cs.forEach(c=>c
  crew[0].send({t:'say',txt:'hi traitors',ch:'traitor'});await sleep(100);ok(!tr.v.tmsgs.some(m=>m.txt==='hi traitors'),'crew cannot post in the traitor channel');
  /* ghost tasks and ghost chat */
  const g=crew[1],gr=R.P.find(p=>p.id===g.v.you);gr.alive=false;await sleep(700);
- const before=A.v.done;g.send({t:'task_start',i:0});await sleep(3300);g.send({t:'task_done',i:0});await sleep(700);
+ const before=A.v.done;g.send({t:'task_start',i:0});await sleep(5800);g.send({t:'task_done',i:0});await sleep(700);
  ok(g.v.mine[0].done&&A.v.done>before,'a ghost can finish a task and it counts for the crew');
  g.send({t:'say',txt:'boo',ch:'ghost'});await sleep(120);ok(g.v.gmsgs.some(m=>m.txt==='boo'),'ghost chat works for ghosts');
  ok(crew.filter(c=>c!==g).every(c=>c.v.gmsgs.length===0),'living players cannot see ghost chat');

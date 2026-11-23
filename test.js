@@ -23,7 +23,7 @@ const ok=(c,msg)=>{if(!c)throw new Error('FAIL '+msg);console.log('pass',msg)};
  // task min time
  const me=A.v.P.find(p=>p.id===A.v.you);
  A.send({t:'task_start',i:0});A.send({t:'task_done',i:0});await sleep(200);ok(!A.v.mine[0].done,'instant task completion rejected');
- A.send({t:'task_start',i:0});await sleep(3300);A.send({t:'task_done',i:0});await sleep(200);ok(A.v.mine[0].done||A.v.ph!=='play','task accepted after minimum time');
+ A.send({t:'task_start',i:0});await sleep(5800);A.send({t:'task_done',i:0});await sleep(200);ok(A.v.mine[0].done||A.v.ph!=='play','task accepted after minimum time');
  // duplicate action id
  const dup={t:'say',txt:'x',aid:'same'};
  // reconnect

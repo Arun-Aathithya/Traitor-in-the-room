@@ -28,17 +28,21 @@ module.exports=function(ctx){
         tasksPct:M.length?Math.round(tasks/M.length*100):0,sabsPerMatch:M.length?+(sab/M.length).toFixed(1):0,meetingsPerMatch:M.length?+(meet/M.length).toFixed(1):0,quickPct:M.length?Math.round(quick/M.length*100):0,rolesPct:M.length?Math.round(rl/M.length*100):0,attacksPerMatch:M.length?+(atk/M.length).toFixed(1):0,savesPerMatch:M.length?+(sav/M.length).toFixed(1):0,elimsPerMatch:M.length?+(elim/M.length).toFixed(1):0},
       days:Object.values(days),why,mode,
       accounts:{total:accts.length,players:accts.filter(a=>a.games>0).length,banned:Object.keys(MOD.bans.acct).length},
+      economy:{earned:(ACC.eco&&ACC.eco.earned)||0,spent:(ACC.eco&&ACC.eco.spent)||0,held:accts.reduce((n,a)=>n+(a.cr||0),0),owners:accts.filter(a=>(a.own||[]).length).length},
       reports:{open:R.filter(r=>r.status==='open').length,total:R.length},bannedDevices:Object.keys(MOD.bans.did).length}}
   return function(req,res,url){const p=url.pathname;if(!p.startsWith('/admin/api/'))return false;if(!authed(req,res))return true;
     const sub=p.slice(11);
     if(req.method==='GET'&&sub==='overview')return json(res,200,overview()),true;
     if(req.method==='GET'&&sub==='reports'){const st=url.searchParams.get('status');return json(res,200,{reports:reports().filter(r=>!st||st==='all'||r.status===st).slice(0,300)}),true}
-    if(req.method==='GET'&&sub==='accounts')return json(res,200,{accounts:Object.entries(ACC.users).map(([k,u])=>({key:k,name:u.name,games:u.games,wins:u.wins,tasks:u.tasks,created:u.created,banned:!!MOD.bans.acct[k]})).sort((a,b)=>b.games-a.games)}),true;
+    if(req.method==='GET'&&sub==='accounts')return json(res,200,{accounts:Object.entries(ACC.users).map(([k,u])=>({key:k,name:(u.nick?u.nick+' ('+u.name+')':u.name),games:u.games,wins:u.wins,tasks:u.tasks,credits:u.cr||0,items:(u.own||[]).length,created:u.created,banned:!!MOD.bans.acct[k]})).sort((a,b)=>b.games-a.games)}),true;
+    if(req.method==='GET'&&sub==='replays'){const R=lines('replays.jsonl',150).map(o=>({id:o.id,ts:o.ts,w:o.w,why:o.why,secs:o.secs,n:o.n,humans:o.humans,classic:o.classic,len:o.R&&o.R.match,tasks:o.R&&o.R.tasks})).reverse();return json(res,200,{replays:R}),true}
+    if(req.method==='GET'&&sub.startsWith('replays/')){const id=sub.slice(8);if(!/^[a-f0-9]{12}$/.test(id))return json(res,400,{error:'Bad replay id.'}),true;
+      const o=lines('replays.jsonl',400).find(x=>x.id===id);return o?json(res,200,o):json(res,404,{error:'That replay is gone (only the latest matches are kept).'}),true}
     if(req.method==='GET'&&sub==='bans')return json(res,200,{accounts:MOD.bans.acct,devices:MOD.bans.did}),true;
     if(req.method==='GET'&&sub==='rooms'){const o=[];rooms.forEach(r=>o.push({code:r.code,phase:r.ph,humans:r.P.filter(x=>!x.bot).length,online:r.P.filter(x=>x.online&&!x.bot).length,bots:r.P.filter(x=>x.bot).length,left:r.G?Math.round(r.G.left):null}));return json(res,200,{rooms:o}),true}
-    if(req.method==='GET'&&sub==='matches.csv'){const M=lines('matches.jsonl',20000),h='ts,room,players,humans,bots,winner,reason,seconds,tasks_done,tasks_total,sabotages,meetings,classic,quick,special_roles,attacks,saves,eliminations',q=s=>'"'+String(s).replace(/"/g,'""')+'"';
+    if(req.method==='GET'&&sub==='matches.csv'){const M=lines('matches.jsonl',20000),h='ts,room,players,humans,bots,winner,reason,seconds,tasks_done,tasks_total,sabotages,meetings,classic,quick,special_roles,attacks,saves,eliminations,match_seconds,tasks_per_player',q=s=>'"'+String(s).replace(/"/g,'""')+'"';
       res.writeHead(200,{'content-type':'text/csv; charset=utf-8','content-disposition':'attachment; filename="matches.csv"','cache-control':'no-store'});
-      res.end([h,...M.map(m=>[m.ts,m.room,m.n,m.humans,m.n-m.humans,m.w,q(m.why),m.secs,m.done,m.total,m.sabs,m.meets,m.classic,m.quick,!!m.roles,m.atks||0,m.saves||0,m.elims||0].join(','))].join('\n'));return true}
+      res.end([h,...M.map(m=>[m.ts,m.room,m.n,m.humans,m.n-m.humans,m.w,q(m.why),m.secs,m.done,m.total,m.sabs,m.meets,m.classic,m.quick,!!m.roles,m.atks||0,m.saves||0,m.elims||0,m.len||'',m.tpp||3].join(','))].join('\n'));return true}
     if(req.method==='POST'&&sub.startsWith('reports/')){const id=sub.slice(8);body(req,b=>{if(!b)return json(res,400,{error:'Bad request.'});
       const r=reports().find(x=>x.id===id);if(!r)return json(res,404,{error:'No such report.'});const a=b.action;
       if(a==='dismiss'||a==='reviewed'){MOD.reviewed[id]=a}

@@ -12,14 +12,19 @@ sound, haptics, ejection animation, share report. -->
 <meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Traitor"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Traitor in the Room</title>
-<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0B0F17;--card:#141A26;--line:#263149;--amb:#FFB020;--txt:#E8ECF4;--mut:#93A0BA;--ok:#3DDC97;--bad:#FF5C6C}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--bg);color:var(--txt);font:15px/1.4 'IBM Plex Sans',system-ui,sans-serif}
+html,body{background:var(--bg);color:var(--txt);font:15px/1.4 'Outfit','IBM Plex Sans',system-ui,sans-serif}
 body{background-image:linear-gradient(rgba(255,176,32,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,176,32,.045) 1px,transparent 1px);background-size:32px 32px}
 #app{max-width:430px;margin:0 auto;min-height:100dvh;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:12px}
-.h{font-family:'Chakra Petch',sans-serif;font-weight:600}.mono{font-family:'IBM Plex Mono',monospace}
+.h{font-family:'Chakra Petch',sans-serif;font-weight:600}.h.amb{font-family:'Audiowide','Chakra Petch',sans-serif;font-weight:400;text-shadow:0 0 18px rgba(255,176,32,.45)}
+.av.fr_gold{box-shadow:0 0 0 2px var(--card),0 0 0 4px #FFD84D}.av.fr_neon{box-shadow:0 0 0 2px var(--card),0 0 0 4px #4DE8B0,0 0 12px #4DE8B0}.av.fr_rose{box-shadow:0 0 0 2px var(--card),0 0 0 4px #FF7A8A}.av.fr_ice{box-shadow:0 0 0 2px var(--card),0 0 0 4px #5CC8FF,0 0 10px #5CC8FF}.av.fr_dash{outline:2px dashed #C49BFF;outline-offset:2px}
+.ti{font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;border-radius:999px;background:rgba(255,176,32,.14);color:var(--amb);margin-left:6px;white-space:nowrap}
+.av img{width:100%;height:100%;border-radius:50%;object-fit:cover}.av.big{width:84px;height:84px;font-size:38px;border:3px solid var(--amb);box-shadow:0 0 22px rgba(255,176,32,.35)}
+.card{box-shadow:0 6px 24px rgba(0,0,0,.28)}.btn:active{transform:scale(.97)}.btn{transition:transform .08s,filter .15s}.btn:hover{filter:brightness(1.08)}
+body{background-image:radial-gradient(900px 500px at 50% -10%,rgba(255,176,32,.12),transparent),linear-gradient(rgba(255,176,32,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,176,32,.045) 1px,transparent 1px)!important}.mono{font-family:'IBM Plex Mono',monospace}
 .mut{color:var(--mut);font-size:13px}.amb{color:var(--amb)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
 .row{display:flex;align-items:center;gap:10px}.sp{justify-content:space-between}.grow{flex:1;min-width:0}
@@ -44,7 +49,7 @@ input[type=text],input[type=password]{background:#0f1420;border:1px solid var(--
 .msg.me{border-color:rgba(255,176,32,.5)}.msg.hid{color:var(--mut);font-style:italic;font-size:13px}.msg .nm{font:600 13px 'Chakra Petch',sans-serif}
 .col{display:flex;flex-direction:column;gap:12px;min-width:0}
 .keys{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.keys .btn{height:46px;font-size:18px}
-.cell{height:54px;border-radius:10px;background:#1E2740}.cell.hot{background:rgba(255,176,32,.22);box-shadow:0 0 0 1px var(--amb)}.cell.got{background:rgba(61,220,151,.4);box-shadow:0 0 0 1px var(--ok)}
+.cell.s{background:rgba(92,200,255,.35);box-shadow:0 0 0 1px #5CC8FF}button.cell{border:0;width:100%;cursor:pointer}.ep{height:96px;border-radius:50%;width:96px;margin:6px auto;border:3px solid var(--amb);transition:background .1s;box-shadow:0 0 24px rgba(255,176,32,.3)}.cell{height:54px;border-radius:10px;background:#1E2740}.cell.hot{background:rgba(255,176,32,.22);box-shadow:0 0 0 1px var(--amb)}.cell.got{background:rgba(61,220,151,.4);box-shadow:0 0 0 1px var(--ok)}
 .ej{position:relative;overflow:hidden;min-height:320px;align-items:center;justify-content:center;text-align:center;padding:40px 16px;margin-top:30px}
 .stars{position:absolute;inset:0;background-image:radial-gradient(1.5px 1.5px at 20% 30%,#fff9,transparent),radial-gradient(1.5px 1.5px at 70% 60%,#fff9,transparent),radial-gradient(1px 1px at 40% 80%,#fff9,transparent),radial-gradient(1px 1px at 85% 20%,#fff9,transparent);background-size:180px 180px;animation:drift 3.6s linear forwards}
 @keyframes drift{to{background-position:-420px 0}}
@@ -66,11 +71,11 @@ input[type=text],input[type=password]{background:#0f1420;border:1px solid var(--
 /* ============ CONSTANTS ============ */
 const COL=['#FF7A8A','#FFB36B','#FFD84D','#A3E86B','#4DE8B0','#5CC8FF','#8E9CFF','#C49BFF'];
 const SH=['M6 1a5 5 0 1 0 0.001 0Z','M1.5 1.5h9v9h-9Z','M6 1L11 10.5H1Z','M6 0.5L11.5 6L6 11.5L0.5 6Z','M3.2 1.2h5.6L11.5 6L8.8 10.8H3.2L0.5 6Z','M4.5 1h3v3.5H11v3H7.5V11h-3V7.5H1v-3h3.5Z','M6 0.8L11 4.6L9.1 10.6H2.9L1 4.6Z','M3.8 1h4.4L11 3.8v4.4L8.2 11H3.8L1 8.2V3.8Z'];
-const TYPEN={seq:'Number sequence',hold:'Hold steady',tap:'Rapid tap',slider:'Dial it in',memory:'Memory check',timing:'Timing',wires:'Wiring',sort:'Sorting',code:'Code entry',drag:'Drag and drop (mouse)',scan:'Hover scan (mouse)'};
-const MINMS={seq:900,hold:1800,tap:1200,slider:900,memory:3000,timing:1000,wires:1500,sort:1200,code:1200,drag:800,scan:1200};
+const TYPEN={echo:'Feel the rhythm',lie:'Lie detector',after:'Afterimage memory',trace:'Signal trace',alibi:'Alibi memory',cipher:'Word cipher',count:'Headcount',ink:'Mind trap',seq:'Number sequence',hold:'Hold steady',tap:'Rapid tap',slider:'Dial it in',memory:'Memory check',timing:'Timing',wires:'Wiring',sort:'Sorting',code:'Code entry',drag:'Drag and drop (mouse)',scan:'Hover scan (mouse)'};
+const MINMS={echo:4500,lie:1500,after:3500,trace:1800,alibi:5500,cipher:2500,count:4200,ink:2500,seq:900,hold:1800,tap:1200,slider:900,memory:3000,timing:1000,wires:1500,sort:1200,code:1200,drag:800,scan:1200};
 const WIRES=[['#FF5C6C','Red'],['#FFD84D','Yellow'],['#3DDC97','Green'],['#5CC8FF','Blue'],['#C49BFF','Violet']];
 const TASKS=3,STN=['Reactor','Engine','Lab','Bridge','Cargo','Medbay'];
-const rnd=n=>Math.floor(Math.random()*n),buzz=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
+const rnd=n=>Math.floor(Math.random()*n),HAP={on:(()=>{try{return localStorage.getItem('hap')!=='0'}catch(e){return true}})()},buzz=p=>{try{HAP.on&&navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
 const fmt=s=>{s=Math.max(0,Math.ceil(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -81,22 +86,31 @@ const AUD={ctx:null,on:ld('snd')!=='0'};
 function actx(){if(!AUD.ctx){try{AUD.ctx=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}return AUD.ctx}
 function tone(f,t0,d,ty,v,f2){const c=actx();if(!c||!AUD.on)return;try{const o=c.createOscillator(),g=c.createGain(),n=c.currentTime+t0;o.type=ty||'sine';o.frequency.setValueAtTime(f,n);if(f2)o.frequency.linearRampToValueAtTime(f2,n+d);
   g.gain.setValueAtTime(0.0001,n);g.gain.linearRampToValueAtTime(v||.1,n+.02);g.gain.exponentialRampToValueAtTime(.0001,n+d);o.connect(g);g.connect(c.destination);o.start(n);o.stop(n+d+.05)}catch(e){}}
-const SND={ok(){tone(660,0,.12);tone(990,.1,.18)},alarm(){for(let i=0;i<3;i++)tone(880,i*.35,.3,'square',.07,520)},meet(){tone(440,0,.18,'triangle',.14);tone(330,.2,.3,'triangle',.14)},
+const SND={ok(){tone(660,0,.12);tone(990,.1,.18);buzz([25,40,60])},alarm(){for(let i=0;i<3;i++)tone(880,i*.35,.3,'square',.07,520);buzz([200,80,200,80,200])},meet(){tone(440,0,.18,'triangle',.14);tone(330,.2,.3,'triangle',.14);buzz([120,60,120])},
   eject(){tone(500,0,1.4,'sawtooth',.07,60)},win(){[523,659,784,1047].forEach((f,i)=>tone(f,i*.14,.3,'triangle',.12))},lose(){[392,330,262,196].forEach((f,i)=>tone(f,i*.18,.35,'sawtooth',.07))},msg(){tone(740,0,.07,'sine',.06)}};
-['pointerdown','keydown'].forEach(t=>addEventListener(t,()=>{const c=actx();if(c&&c.state==='suspended')c.resume()},{passive:true}));
+const MUS={on:ld('mus')!=='0',t:null,n:0};
+function musTick(){const c=actx();if(!c||!AUD.on||!MUS.on||document.hidden)return;const ch=[[110,165,220],[98,147,196],[87,131,175],[98,147,196]][MUS.n++%4],play=G&&G.ph==='play';
+  ch.forEach((f,i)=>tone(f,i*.03,3.9,'sine',.02));tone(ch[0]/2,0,2,'triangle',.035);tone(ch[2]*2,2,1.6,'sine',.012);
+  if(play){tone(55,0,.22,'sine',.06);tone(55,.4,.22,'sine',.05);tone(55,1.9,.22,'sine',.06);tone(55,2.3,.22,'sine',.05);tone(ch[0]*4,3.4,.15,'square',.01)}}
+function musStart(){if(!MUS.t){musTick();MUS.t=setInterval(musTick,3900)}}
+['pointerdown','keydown'].forEach(t=>addEventListener(t,()=>{const c=actx();if(c&&c.state==='suspended')c.resume();musStart()},{passive:true}));
+addEventListener('pointerdown',e=>{if(e.target.closest&&e.target.closest('.btn,.tag,.key'))buzz(12)},{passive:true});
 let tt=0;function toast(m){const e=$('#toast');e.textContent=m;e.style.display='block';clearTimeout(tt);tt=setTimeout(()=>e.style.display='none',2600)}
 /* ============ LOGO ============ */
 const LOGO=(z=44)=>`<svg width="${z}" height="${z}" viewBox="0 0 64 64" role="img" aria-label="Traitor in the Room logo"><path d="M32 3L57 17.5V46.5L32 61L7 46.5V17.5Z" fill="#141A26" stroke="#FFB020" stroke-width="3" stroke-linejoin="round"/><circle cx="32" cy="26" r="8" fill="#FFB020"/><path d="M28 31h8l4 17H24Z" fill="#FFB020"/><path d="M32 21.5L35.5 26L32 30.5L28.5 26Z" fill="#141A26"/><circle cx="32" cy="26" r="1.7" fill="#FFB020"/></svg>`;
-const AV=p=>`<div class="av" style="background:${p.col}">${esc(p.name[0])}<svg viewBox="0 0 12 12"><path d="${SH[p.shp]}" fill="${p.col}"/></svg></div>`;
+const AV=p=>`<div class="av${/^fr_[a-z]+$/.test(p.fr||'')?' '+p.fr:''}" style="background:${p.col}">${p.pic&&/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(p.pic)?`<img alt="" src="${p.pic}">`:esc((p.name||'?')[0].toUpperCase())}${p.shp!=null?`<svg viewBox="0 0 12 12"><path d="${SH[p.shp]||''}" fill="${p.col}"/></svg>`:''}</div>`;
 /* ============ NET ============ */
 const traitorsFor=n=>n>=8?2:1;
-const rulesFor=s=>({...(s.classic?{match:240,meet:2,sabMax:3,atkMax:2}:{match:180,meet:3,sabMax:4,atkMax:3}),roles:!!s.roles});
+const NT=p=>esc(p.name)+(p.ti?`<span class="ti">${esc(p.ti)}</span>`:'');
+const lenOk=v=>v!=null&&Number.isFinite(+v)?Math.min(420,Math.max(120,Math.round(+v/30)*30)):0,tasksOk=v=>{const n=Math.floor(+v);return Number.isFinite(n)?Math.min(5,Math.max(1,n)):3};
+const rulesFor=s=>{const o={...(s.classic?{match:240,meet:2,sabMax:3,atkMax:2}:{match:180,meet:3,sabMax:4,atkMax:3}),roles:!!s.roles};if(lenOk(s.len))o.match=lenOk(s.len);o.tasks=tasksOk(s.tasks);return o};
 const CLSN={detective:'Detective',engineer:'Engineer',guardian:'Guardian',scientist:'Scientist',scout:'Scout',medic:'Medic'};
-const S={scr:'home',name:'',code:'',jc:new URLSearchParams(location.search).get('join')||'',peek:false,confirm:false,sel:null,err:'',cd:0,ready:false,acct:null,help:false,au:'',ap:'',inst:null};
+const S={scr:(ld('au')&&ld('as'))||ld('guest')?'home':'login',guest:!!ld('guest'),dn:null,dp:null,gid:'',name:'',code:'',jc:new URLSearchParams(location.search).get('join')||'',peek:false,confirm:false,sel:null,err:'',cd:0,ready:false,acct:null,help:false,au:'',ap:'',inst:null};
 let G=null,hold=null,LT=null,ws=null,seq=0,retry=0,lastSig='',PEND={};
 const dev=matchMedia('(pointer:coarse)').matches?'Phone':'PC';
 const did=ld('did')||(()=>{const d=Math.random().toString(36).slice(2)+Date.now().toString(36);sv('did',d);return d})();
 S.name=ld('name')||'';
+const myNick=()=>S.acct?(S.acct.nick||''):(ld('nick')||''),myPic=()=>S.acct?(S.acct.pic||''):(ld('pic')||'');
 function hud(){if(!G)return;const set=(id,v)=>{const e=$(id);if(e)e.textContent=v};set('#clk',fmt(G.left));set('#sc',G.sab?fmt(G.sab.left):'');
   const b=$('#cb');if(b)b.style.width=(G.total?G.done/G.total*100:0)+'%';set('#cdn',G.sabCd>0?fmt(G.sabCd):'ready');set('#mcd',G.mcd>0?fmt(G.mcd):'');set('#abcd',G.ab&&G.ab.cd>0?fmt(G.ab.cd):'ready');set('#atcd',G.atk&&G.atk.cd>0?fmt(G.atk.cd):'ready');set('#dn',G.down?Math.max(0,Math.ceil(G.down.left)):'');const al=$('#al');if(al)al.style.width=G.alone+'%'}
 const send=m=>{m.aid=++seq+'-'+Date.now();if(ws&&ws.readyState===1)ws.send(JSON.stringify(m))};
@@ -113,7 +127,7 @@ setInterval(()=>send({t:'ping'}),10000);
 let cerrN=0;const cerr=(msg,src)=>{if(cerrN++<3)raw({t:'cerr',msg:String(msg).slice(0,160),src:String(src||'').slice(0,60)})};
 addEventListener('error',e=>cerr(e.message,(e.filename||'').split('/').pop()+':'+e.lineno));addEventListener('unhandledrejection',e=>cerr(e.reason&&e.reason.message||e.reason,'promise'));
 const msgSig=a=>a.map(m=>m.id+(m.hid?'h':m.rep?'r':'')).join();
-const sig=v=>JSON.stringify([v.ph,v.host,v.set,v.cd,v.ready,v.P.map(p=>[p.id,p.alive,p.online,p.done]),v.mine.map(t=>t.done),!!v.sab,msgSig(v.msgs),msgSig(v.gmsgs),msgSig(v.tmsgs),v.muted,v.chatOff,v.canPair,
+const sig=v=>JSON.stringify([v.ph,v.host,v.set,v.cd,v.ready,v.P.map(p=>[p.id,p.alive,p.online,p.done,p.fr,p.ti]),v.mine.map(t=>t.done),!!v.sab,msgSig(v.msgs),msgSig(v.gmsgs),msgSig(v.tmsgs),v.muted,v.chatOff,v.canPair,
   v.pairs.map(x=>x.a),v.mypair&&[v.mypair.partner,v.mypair.i],v.phase&&v.phase.k,v.log.length,v.pl.length,v.cleared.map(c=>c.ids.length),v.meet,v.mcd>0,v.sabCd>0,v.sabUsed,v.alone>=50,!!v.eject,!!v.end,v.notes.length,!!v.down,v.downs.map(d=>d.id),v.ab&&[v.ab.uses,v.ab.cd>0,v.ab.can,v.ab.seen.length],v.atk&&[v.atk.target&&v.atk.target.id,v.atk.cd>0,v.atk.used]]);
 function events(o,v){if(!o||o.code!==v.code)return;
   if(v.ph!==o.ph){if(v.ph==='meeting'){SND.meet();buzz([120,60,120])}else if(v.ph==='eject')SND.eject();
@@ -127,8 +141,8 @@ function apply(m){
   if(m.t==='err'){S.err=m.msg;if(m.fatal){sv('token');sv('code');G=null;S.scr='home'}else toast(m.msg);render();return}
   if(m.t==='joined'){sv('token',m.token);sv('code',m.code);S.code=m.code;return}
   if(m.t==='token'){sv('token',m.token);return}
-  if(m.t==='acct'){if(m.user){S.acct={user:m.user,stats:m.stats||{games:0,wins:0,tasks:0}};sv('au',m.user);if(m.sess)sv('as',m.sess);S.err='';S.ap=''}else{S.acct=null;sv('au');sv('as')}if(S.scr==='home')render();return}
-  if(m.t==='stats'){if(S.acct)S.acct.stats=m.stats;return}
+  if(m.t==='acct'){if(m.user){const first=!S.acct;S.acct={user:m.user,nick:m.nick||'',pic:m.pic||'',stats:m.stats||(S.acct&&S.acct.stats)||{games:0,wins:0,tasks:0},cr:m.cr||0,own:m.own||[],eq:m.eq||{frame:'',title:''}};if(m.shop)S.shop=m.shop;sv('au',m.user);if(m.sess)sv('as',m.sess);S.err='';S.ap='';if(S.scr==='login'||(first&&!S.acct.nick&&S.scr==='home'))S.scr=S.acct.nick?'home':'nick';else if(S.scr==='nick'&&S.saving){S.saving=0;S.scr='home'}if(S.acct.nick&&!S.name)S.name=S.acct.nick}else{S.acct=null;sv('au');sv('as');if(!S.guest&&S.scr==='home')S.scr='login'}if(['home','login','nick','shop'].includes(S.scr))render();return}
+  if(m.t==='stats'){if(S.acct){S.acct.stats=m.stats;if(m.cr!=null)S.acct.cr=m.cr}return}
   if(m.t!=='state')return;
   const v=m.v,was=G&&G.ph,s=sig(v),o=G;events(o,v);G=v;G.me=v.P.find(p=>p.id===v.you);S.code=v.code;S.cd=v.cd;S.ready=v.ready;
   if(G.ph!==was){S.confirm=false;S.sel=null;LT=null;S.peek=false;hold=null;if(was==='lobby'||was==='reveal')PEND={}}
@@ -147,6 +161,7 @@ function initTask(i,t){const o={i,type:t.type,st:t.st,name:t.name,t0:performance
   else if(o.type==='sort'){const s=new Set();while(s.size<4)s.add(10+rnd(90));o.vals=[...s];o.sorted=[...s].sort((a,b)=>a-b);o.used=[]}
   else if(o.type==='drag'){o.tg=.68+Math.random()*.22;o.pos=0}
   else if(o.type==='scan'){o.hot=[...Array(12).keys()].sort(()=>Math.random()-.5).slice(0,5);o.got=[]}
+  else newTask(o);
   return o}
 function fin(){const t=LT;if(!t)return;const w=Math.max(0,MINMS[t.type]+200-(performance.now()-t.t0));LT=null;G.task=null;PEND[t.i]=Date.now()+w+2500;
   setTimeout(()=>send({t:'task_done',i:t.i}),w);buzz(70);SND.ok();render()}
@@ -164,7 +179,60 @@ function taskCard(t){const ty=t.type;let b='';
   else if(ty==='sort')b=`<div class="h" style="font-size:20px">Tap lightest to heaviest</div><div class="row" style="flex-wrap:wrap">${t.vals.map((v,k)=>`<button class="btn sec" style="width:calc(50% - 5px)" data-a="s${k}" ${t.used.includes(k)?'disabled':''}>${v} kg</button>`).join('')}</div>`;
   else if(ty==='drag')b=`<div class="h" style="font-size:20px">Drag the rod into the slot</div><div id="dtr" style="position:relative;height:52px;border-radius:12px;background:#1E2740;touch-action:none"><div style="position:absolute;top:6px;bottom:6px;left:${(t.tg-.08)*100}%;width:16%;border:2px dashed var(--ok);border-radius:8px"></div><div id="dh" style="position:absolute;top:4px;bottom:4px;width:44px;left:calc(${t.pos*100}% - 22px);background:var(--amb);border-radius:8px;cursor:grab"></div></div><div class="mut">${esc(t.msg)}</div>`;
   else if(ty==='scan')b=`<div class="h" style="font-size:20px">Sweep the pointer over the glowing cells</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">${[...Array(12).keys()].map(k=>`<div class="cell ${t.hot.includes(k)?(t.got.includes(k)?'hot got':'hot'):''}" data-cell="${k}"></div>`).join('')}</div><div class="mut">${t.got.length} of 5 scanned</div>`;
+  if(!b)b=xCard(t);
   return `<div class="card"><div class="mut">${esc(t.st)} station - ${esc(t.name)}</div>${b}</div>`}
+/* ============ SIGNATURE TASKS: built around lies, alibis, memory and feel ============ */
+const NAMES=['Ravi','Meera','Dev','Isha','Kabir','Nila','Om','Zara'],WORDS=['TRUST','LIARS','ALIBI','GUILT','CLUES','AGENT','TRAIL','VOTES','SNEAK','HIDES'],INKC=[['Red','#FF5C6C'],['Green','#3DDC97'],['Blue','#5CC8FF'],['Yellow','#FFD84D']];
+const shuf=a=>a.slice().sort(()=>Math.random()-.5),BAD=()=>buzz([60,40,60]);
+function lieSet(o){const m=[];for(let i=0;i<3;i++){const a=2+rnd(8),b=2+rnd(8),k=rnd(3);m.push(k===0?{t:a+' + '+b,v:a+b}:k===1?{t:(a+b)+' - '+b,v:a}:{t:a+' x '+b,v:a*b})}
+  o.lie=rnd(3);o.s3=m.map((x,i)=>x.t+' = '+(i===o.lie?x.v+(rnd(2)?1:-1)*(1+rnd(2)):x.v))}
+function afterShow(o){o.show=true;render();setTimeout(()=>{if(LT===o){o.show=false;render()}},1500)}
+function alibiNew(o){o.nm=shuf(NAMES).slice(0,3);o.pl=shuf(STN).slice(0,3);o.q=rnd(3);o.opts=shuf(o.pl);o.show=true;setTimeout(()=>{if(LT===o){o.show=false;render()}},3600)}
+function inkNew(o){o.w=rnd(4);o.c=(o.w+1+rnd(3))%4}
+function cipherNew(o){o.word=WORDS[rnd(WORDS.length)];let t;do t=shuf(o.word.split(''));while(t.join('')===o.word);o.tiles=t;o.ans=[]}
+function countStep(o){if(LT!==o)return;if(o.i<o.n){o.cur=o.seq[o.i++];render();buzz(8);tone(380+o.i*45,0,.08);setTimeout(()=>{if(LT===o){o.cur=-1;render();setTimeout(()=>countStep(o),170)}},360)}
+  else{const s=new Set([o.n]);while(s.size<4){const x=o.n+rnd(5)-2;if(x>=2)s.add(x)}o.opts=[...s].sort((a,b)=>a-b);o.ph='ask';render()}}
+function countNew(o){o.n=4+rnd(4);o.seq=Array.from({length:o.n},()=>rnd(9));o.i=0;o.cur=-1;o.ph='show';setTimeout(()=>countStep(o),500)}
+function echoPlay(o){o.ph='watch';o.taps=[];let t=0;render();[0,...o.pat].forEach((d,i)=>{t+=d;setTimeout(()=>{if(LT!==o)return;const e=$('#ep');if(e){e.style.background='var(--amb)';setTimeout(()=>{e.style.background=''},140)}tone(520,0,.12,'triangle',.14);buzz(45);if(i===3)setTimeout(()=>{if(LT===o){o.ph='go';render()}},450)},t)})}
+function newTask(o){const ty=o.type;
+  if(ty==='echo'){o.pat=[0,0,0].map(()=>[350,700][rnd(2)]);setTimeout(()=>{if(LT===o)echoPlay(o)},500)}
+  else if(ty==='lie')lieSet(o);
+  else if(ty==='after'){o.lit=shuf([0,1,2,3,4,5,6,7,8]).slice(0,4);o.sel=[];setTimeout(()=>{if(LT===o)afterShow(o)},300)}
+  else if(ty==='trace'){o.xs=[28,89,150,211,272];o.ys=o.xs.map(()=>25+rnd(130));o.nx=0;o.on=false}
+  else if(ty==='alibi')alibiNew(o);
+  else if(ty==='cipher')cipherNew(o);
+  else if(ty==='count')countNew(o);
+  else if(ty==='ink'){o.n=0;inkNew(o)}}
+function xCard(t){const ty=t.type,H=x=>`<div class="h" style="font-size:20px">${x}</div>`,M=`<div class="mut">${esc(t.msg||'')}</div>`,B=(a,x,st)=>`<button class="btn sec" data-a="${a}" style="${st||''}">${x}</button>`;let b='';
+  if(ty==='echo')b=t.ph==='go'?H('Now tap the same rhythm')+`<button class="btn" data-a="ep">Tap the beat (${t.taps.length} of 4)</button><button class="tag" data-a="er" style="align-self:center">Replay it</button>`+M:H('Watch, listen and feel the rhythm')+`<div class="ep" id="ep"></div><div class="mut" style="text-align:center">Turn the sound or vibration on to feel it.</div>`;
+  else if(ty==='lie')b=H('One of these is a lie. Tap it.')+t.s3.map((x,i)=>B('l'+i,x,'font:600 20px "IBM Plex Mono",monospace')).join('')+M;
+  else if(ty==='after')b=H(t.show?'Memorise the glowing cells':'Tap the 4 cells that glowed')+`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">${[...Array(9).keys()].map(k=>`<button class="cell ${t.show&&t.lit.includes(k)?'hot':t.sel.includes(k)?'s':''}" data-a="a${k}" aria-label="Cell ${k+1}"></button>`).join('')}</div>`+M;
+  else if(ty==='trace'){const pts=t.xs.map((x,k)=>x+','+t.ys[k]).join(' ');b=H('Press 1, then drag through 2, 3, 4, 5')+`<svg id="trc" viewBox="0 0 300 180" style="width:100%;touch-action:none;background:#1E2740;border-radius:12px;user-select:none"><polyline points="${pts}" fill="none" stroke="#3A4A6E" stroke-width="3" stroke-dasharray="6 6"/>${t.xs.map((x,k)=>`<circle id="tn${k}" cx="${x}" cy="${t.ys[k]}" r="12" fill="${k<t.nx?'#3DDC97':'#FFB020'}"/><text x="${x}" y="${t.ys[k]+4}" text-anchor="middle" font-size="12" font-weight="700" fill="#0B0F17">${k+1}</text>`).join('')}</svg>`+M}
+  else if(ty==='alibi')b=t.show?H('Memorise who was where')+t.nm.map((n,i)=>`<div class="card" style="flex-direction:row;justify-content:space-between"><b>${n}</b><span class="amb">${t.pl[i]}</span></div>`).join(''):H('Where was '+t.nm[t.q]+'?')+t.opts.map((p,i)=>B('al'+i,p)).join('')+M;
+  else if(ty==='cipher')b=H('Unscramble the word')+`<div class="mono amb" style="font-size:32px;letter-spacing:.25em;text-align:center;min-height:42px">${t.ans.map(i=>t.tiles[i]).join('').padEnd(5,'_').split('').join(' ')}</div><div class="row" style="flex-wrap:wrap;justify-content:center">${t.tiles.map((c,k)=>`<button class="btn sec" style="width:56px" data-a="cw${k}" ${t.ans.includes(k)?'disabled':''}>${c}</button>`).join('')}</div><button class="tag" data-a="cu" style="align-self:center">Undo</button>`+M;
+  else if(ty==='count')b=t.ph==='show'?H('Count every flash')+`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">${[...Array(9).keys()].map(k=>`<div class="cell ${k===t.cur?'hot':''}"></div>`).join('')}</div>`:H('How many flashes?')+`<div class="row" style="flex-wrap:wrap">${t.opts.map((n,i)=>`<button class="btn sec" style="width:calc(50% - 5px)" data-a="cn${i}">${n}</button>`).join('')}</div>`+M;
+  else if(ty==='ink')b=H('Tap the COLOUR of the ink, not the word')+`<div class="h" style="font-size:44px;text-align:center;color:${INKC[t.c][1]}">${INKC[t.w][0].toUpperCase()}</div><div class="bar"><i style="width:${t.n/3*100}%"></i></div><div class="row" style="flex-wrap:wrap">${INKC.map((c,i)=>`<button class="btn sec" style="width:calc(50% - 5px)" data-a="ik${i}">${c[0]}</button>`).join('')}</div>`+M;
+  return b}
+function taskAct(a){const t=LT;if(!t)return false;const ty=t.type;
+  if(ty==='echo'&&a==='ep'){if(t.ph!=='go')return true;t.taps.push(performance.now());tone(520,0,.1,'triangle',.12);buzz(15);if(t.taps.length===4){const g=[1,2,3].map(i=>t.taps[i]-t.taps[i-1]);if(g.every((x,i)=>Math.abs(x-t.pat[i])<=Math.max(200,t.pat[i]*.4))){fin();return true}t.msg='Off beat. Watch again.';BAD();echoPlay(t)}return true}
+  if(ty==='echo'&&a==='er'){if(t.ph==='go')echoPlay(t);return true}
+  if(ty==='lie'&&/^l\d$/.test(a)){if(+a[1]===t.lie){fin();return true}t.msg='Not that one. Fresh statements.';BAD();lieSet(t);return true}
+  if(ty==='after'&&/^a\d$/.test(a)){if(t.show)return true;const k=+a[1],i=t.sel.indexOf(k);i<0?t.sel.push(k):t.sel.splice(i,1);buzz(10);
+    if(t.sel.length===4){if(t.sel.every(x=>t.lit.includes(x))){fin();return true}t.msg='Not quite. Look again.';t.sel=[];BAD();afterShow(t)}return true}
+  if(ty==='alibi'&&/^al\d$/.test(a)){if(t.show)return true;if(t.opts[+a[2]]===t.pl[t.q]){fin();return true}t.msg='Wrong. New alibis.';BAD();alibiNew(t);return true}
+  if(ty==='cipher'&&/^cw\d$/.test(a)){t.ans.push(+a[2]);buzz(10);if(t.ans.length===5){if(t.ans.map(i=>t.tiles[i]).join('')===t.word){fin();return true}t.msg='Not a word. Try again.';t.ans=[];BAD()}return true}
+  if(ty==='cipher'&&a==='cu'){t.ans.pop();return true}
+  if(ty==='count'&&/^cn\d$/.test(a)){if(t.ph!=='ask')return true;if(t.opts[+a[2]]===t.n){fin();return true}t.msg='Miscounted. Watch again.';BAD();countNew(t);return true}
+  if(ty==='ink'&&/^ik\d$/.test(a)){if(+a[2]===t.c){t.n++;buzz(15);if(t.n>=3){fin();return true}t.msg='';inkNew(t)}else{t.n=0;t.msg='Wrong. Back to zero.';BAD();inkNew(t)}return true}
+  return false}
+function trcPt(e){const s=$('#trc');if(!s)return null;const r=s.getBoundingClientRect();return[(e.clientX-r.left)/r.width*300,(e.clientY-r.top)/r.height*180]}
+function trcPaint(){if(!LT)return;for(let k=0;k<5;k++){const c=$('#tn'+k);if(c)c.setAttribute('fill',k<LT.nx?'#3DDC97':'#FFB020')}}
+document.addEventListener('pointerdown',e=>{if(!LT||LT.type!=='trace'||!e.target.closest||!e.target.closest('#trc'))return;const p=trcPt(e);
+  if(p&&Math.hypot(p[0]-LT.xs[0],p[1]-LT.ys[0])<26){LT.on=true;LT.nx=1;trcPaint();buzz(12);try{e.target.closest('#trc').setPointerCapture(e.pointerId)}catch(x){}}e.preventDefault()});
+document.addEventListener('pointermove',e=>{if(!LT||LT.type!=='trace'||!LT.on)return;const p=trcPt(e);if(!p||LT.nx>4)return;
+  if(Math.hypot(p[0]-LT.xs[LT.nx],p[1]-LT.ys[LT.nx])<22){LT.nx++;buzz(12);tone(420+LT.nx*90,0,.07);trcPaint();if(LT.nx>=5){LT.on=false;fin()}}});
+['pointerup','pointercancel'].forEach(t=>document.addEventListener(t,()=>{if(LT&&LT.type==='trace'&&LT.on){LT.on=false;LT.nx=0;LT.msg='Lifted too early. Start again at 1.';BAD();render()}}));
+
 /* ============ RENDER ============ */
 const AUTHAS=()=>G&&G.host===G.you;
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -172,7 +240,7 @@ function installCard(){if(standalone())return '';
   if(S.inst)return `<div class="card"><div class="row sp"><div><div class="h">Install the app</div><div class="mut" style="font-size:12px">Opens full screen from your home screen or desktop.</div></div><button class="tag" data-a="install">Install</button></div></div>`;
   if(/iphone|ipad|ipod/i.test(navigator.userAgent))return `<div class="card"><div class="h">Install the app</div><div class="mut" style="font-size:12px">In Safari tap the Share button, then Add to Home Screen.</div></div>`;
   return ''}
-function head(){return `<div class="row sp"><div class="row">${LOGO(34)}<div class="h amb" style="font-size:13px;letter-spacing:.18em;text-transform:uppercase">Traitor in the Room</div></div><span class="row" style="gap:8px"><button class="tag sm" data-a="snd" data-tip="Sound effects on or off" aria-label="Sound">Sound ${AUD.on?'on':'off'}</button><span class="mut">${S.code}</span></span></div>`}
+function head(){return `<div class="row sp"><div class="row">${LOGO(34)}<div class="h amb" style="font-size:13px;letter-spacing:.18em;text-transform:uppercase">Traitor in the Room</div></div><span class="row" style="gap:8px"><button class="tag sm" data-a="snd" data-tip="Sound effects on or off" aria-label="Sound">Sound ${AUD.on?'on':'off'}</button><button class="tag sm" data-a="mus" aria-label="Music">Music ${MUS.on?'on':'off'}</button><button class="tag sm" data-a="hap" aria-label="Vibration">Vibe ${HAP.on?'on':'off'}</button><span class="mut">${S.code}</span></span></div>`}
 function msgHtml(m,ch){const hm=G.host===G.you&&(ch==='lobby'||ch==='meet');
   if(m.hid)return `<div class="msg hid">${m.hb?'Message removed by the host':'Message hidden after reports'}</div>`;
   return `<div class="msg ${m.mine?'me':''}"><div class="row sp"><span class="nm" style="color:${m.col}">${esc(m.name)}${m.mine?' (you)':''}</span><span class="row" style="gap:6px">${m.mine?'':`<button class="tag sm" data-mute="${m.pid}" data-tip="Hide this player's messages from you">Mute</button>${m.bot?'':`<button class="tag sm" data-rep="${m.id}" ${m.rep?'disabled':''} data-tip="Two reports hide a message for everyone">${m.rep?'Reported':'Report'}</button>`}`}${hm?`<button class="tag sm" data-hrm="${m.id}" data-tip="Host: remove this message for everyone">Remove</button>`:''}</span></div><div>${esc(m.txt)}</div></div>`}
@@ -192,7 +260,7 @@ function taskRows(ghost){return G.mine.map((t,i)=>{const pend=(PEND[i]||0)>Date.
   const btns=t.done?'<span class="pill" style="color:var(--ok)">Done</span>':pend?'<span class="mut">Finishing...</span>':`<span class="row" style="gap:6px"><button class="tag" data-a="t${i}" data-tip="Alone: quick, but nobody can vouch for you.${dev==='PC'&&!ghost?' Key: '+(i+1):''}">Alone</button>${ghost?'':`<button class="tag" data-a="p${i}" ${G.canPair?'':'disabled'} data-tip="With a partner: both hold for 3 seconds. Slower, but the timeline records a verified link.${dev==='PC'?' Key: Shift+'+(i+1):''}">With partner</button>`}</span>`;
   return `<div class="row sp" style="min-height:52px;border-bottom:1px solid #1E2740"><div class="grow"><div>${esc(t.name)}</div><div class="mut" style="font-size:12px">${t.st} - ${TYPEN[t.type]}</div></div>${btns}</div>`}).join('')}
 function logCard(){return `<div class="card"><div class="h">Timeline</div><div class="log">${G.log.map(l=>`<div><span class="mono mut">${fmt(G.R.match-l.t)}</span> ${l.txt}</div>`).join('')||'<div class="mut">Nothing happened yet.</div>'}</div></div>`}
-function keysCard(){return `<div class="card"><div class="h">Keyboard</div><div class="mut kb" style="font-size:12px">1 2 3: start a task alone<br>Shift + 1 2 3: start with a partner<br>J: join a partner request<br>Space: hold (task, pair, fix) or tap<br>Digits: tasks with numbers, Backspace clears<br>M: call meeting, Y confirm, N cancel<br>S: sabotage, A: attack (traitor)<br>C: jump to a chat box, Enter sends<br>Meeting: 1-9 vote for a player, 0 skip<br>Esc: back or cancel. ?: show or hide this list</div></div>`}
+function keysCard(){return `<div class="card"><div class="h">Keyboard</div><div class="mut kb" style="font-size:12px">1 to 5: start a task alone<br>Shift + 1 to 5: start with a partner<br>J: join a partner request<br>Space: hold (task, pair, fix) or tap<br>Digits: tasks with numbers, Backspace clears<br>M: call meeting, Y confirm, N cancel<br>S: sabotage, A: attack (traitor)<br>C: jump to a chat box, Enter sends<br>Meeting: 1-9 vote for a player, 0 skip<br>Esc: back or cancel. ?: show or hide this list</div></div>`}
 function notebook(share){if(!G.notes.length)return '';const can=share&&G.phase&&G.phase.k==='talk'&&G.me.alive&&!G.chatOff;
   return `<div class="card"><div class="h">Notebook</div><div class="log" style="max-height:170px">${G.notes.map((n,i)=>`<div><span class="mono mut">${fmt(n.t)}</span> ${esc(n.txt)}${can?` <button class="tag sm" data-share="${i}" data-tip="Post this note in the meeting chat">Share</button>`:''}</div>`).join('')}</div><div class="mut" style="font-size:12px">Only you can see this.${share&&!can?' You can share notes while discussion is open.':''}</div></div>`}
 function downCard(){return `<div class="alert" role="alert"><svg width="34" height="34" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="#FF5C6C" stroke-width="2"/><path d="M12 7v6M12 16v1" stroke="#FF5C6C" stroke-width="2"/></svg><div class="grow"><div class="h" style="color:var(--bad);font-size:18px">You were attacked</div><div class="mut">A medic may still save you. Time left: <span class="mono" id="dn"></span> s. You cannot act until then.</div></div></div>`}
@@ -209,25 +277,47 @@ function abilityCard(){const a=G.ab;if(!a||!G.me.alive)return '';const cd=a.cd>0
   return `<div class="card"><div class="row sp"><div class="h">${esc(a.name)}</div><span class="mut">${left}${a.cls==='medic'||a.cls==='guardian'||a.cls==='scientist'?'':' - <span id="abcd"></span>'}</span></div><div class="mut" style="font-size:12px">${esc(a.desc)}</div>${body}</div>`}
 function attackCard(){const a=G.atk;if(!a||!G.me.alive)return '';const off=a.cd>0||a.used>=a.max;
   return `<div class="card"><div class="row sp"><div class="h" style="color:var(--bad)">Attack</div><span class="mut">${a.used} of ${a.max} used</span></div><div class="mut" style="font-size:12px">You must be alone with exactly one crew member. They are downed, and a medic may save them. A shield blocks it. Cooldown: <span id="atcd"></span></div><button class="btn bad" data-atk="${a.target?a.target.id:''}" ${off||!a.target?'disabled':''} data-tip="${dev==='PC'?'Key: A':''}">${a.target?'Attack '+esc(a.target.name):'No lone target here'}</button></div>`}
+function lenTasks(set,R){const st=(m,p,lab,dis,tip)=>`<button class="tag" data-a="${m}" ${dis?'disabled':''} aria-label="${tip}">${lab}</button>`;
+  return `<span class="row" style="gap:4px" data-tip="Match length. Everyone in the lobby sees the change at once.">${st('lnm','',"-",R.match<=120,'Shorter match')}<span class="tag">${fmt(R.match)}${set.len?'':' auto'}</span>${st('lnp','','+',R.match>=420,'Longer match')}${set.len?`<button class="tag" data-a="lna" data-tip="Go back to the length set by Classic mode">Auto</button>`:''}</span>
+  <span class="row" style="gap:4px" data-tip="Tasks each player gets (1 to 5).">${st('tkm','','-',R.tasks<=1,'Fewer tasks')}<span class="tag">${R.tasks} task${R.tasks>1?'s':''} each</span>${st('tkp','','+',R.tasks>=5,'More tasks')}</span>`}
 const V={
 lobby(){const set=G.set,n=G.P.length,tc=traitorsFor(n),min=set.quick?3:5,ok=n>=min,host=G.host===G.you,rev=set.reveal==null?tc===1:set.reveal,crew=n-tc,R=rulesFor(set);
-  const rows=G.P.map(p=>`<div class="row" style="height:44px;border-bottom:1px solid #1E2740">${AV(p)}<div class="grow"><div>${esc(p.name)}${p.id===G.you?' (you)':''}</div><div class="mut" style="font-size:12px">${p.bot?'Bot':p.dev}${p.online?'':' - offline'}</div></div>${p.id===G.host?'<span class="pill">Host</span>':''}${host&&p.bot?`<button class="tag" data-a="rm${p.id}">Remove</button>`:''}${host&&!p.bot&&p.id!==G.you?`<button class="tag" data-a="kick${p.id}" data-tip="Remove this player from the room">Remove</button>`:''}</div>`).join('');
+  const rows=G.P.map(p=>`<div class="row" style="height:44px;border-bottom:1px solid #1E2740">${AV(p)}<div class="grow"><div>${NT(p)}${p.id===G.you?' (you)':''}</div><div class="mut" style="font-size:12px">${p.bot?'Bot':p.dev}${p.online?'':' - offline'}</div></div>${p.id===G.host?'<span class="pill">Host</span>':''}${host&&p.bot?`<button class="tag" data-a="rm${p.id}">Remove</button>`:''}${host&&!p.bot&&p.id!==G.you?`<button class="tag" data-a="kick${p.id}" data-tip="Remove this player from the room">Remove</button>`:''}</div>`).join('');
   const T=(a,on,txt,tip)=>host?`<button class="tag ${on?'on':''}" data-a="${a}" data-tip="${tip||''}">${txt}</button>`:`<span class="tag ${on?'on':''}" data-tip="${tip||''}">${txt}</span>`;
   const mx=host?`<span class="row" style="gap:4px"><button class="tag" data-a="mxm" ${set.max<=Math.max(n,set.quick?3:5)?'disabled':''} aria-label="Fewer players">-</button><span class="tag">Max ${set.max}</span><button class="tag" data-a="mxp" ${set.max>=8?'disabled':''} aria-label="More players">+</button></span>`:`<span class="tag">Max ${set.max}</span>`;
   return head()+`<div class="card"><div class="mut" style="letter-spacing:.14em;text-transform:uppercase;font-size:12px">Room code</div><div class="mono amb" style="font-size:52px;font-weight:600;letter-spacing:.16em;line-height:1">${G.code}</div><div class="row"><div class="mut grow">Friends type this code on phone or PC.</div><button class="tag" data-a="copy">Copy link</button></div></div>
   <div class="row sp"><div class="h" style="font-size:16px">Players</div><span class="mono mut">${n} of ${set.max}</span></div><div class="card" style="padding:2px 14px">${rows}</div>
-  <div class="row" style="flex-wrap:wrap"><span class="tag">${fmt(R.match)} match</span><span class="tag">${R.meet} meetings</span><span class="tag">${tc} traitor${tc>1?'s':''}</span><span class="tag">${crew*TASKS} shared tasks</span><span class="tag">${R.sabMax} sabotages</span>${set.roles?`<span class="tag">${R.atkMax} attacks</span>`:''}</div>
-  <div class="row" style="flex-wrap:wrap">${T('cl',set.classic,'Classic mode '+(set.classic?'on':'off'),set.classic?'Standard rules: 4:00 match, 2 meetings, 3 sabotages. Turn off for fast and loud: 3:00, 3 meetings, 4 sabotages, shorter cooldowns.':'Fast and loud: 3:00 match, 3 meetings, 4 sabotages, shorter cooldowns. Turn on for standard rules.')}${T('rv',rev,'Reveal on ejection '+(rev?'on':'off'),'Show the role of an ejected player')}${T('rl',set.roles,'Special roles '+(set.roles?'on':'off'),'Crew get roles: Detective, Engineer, Guardian, Scientist, Scout, Medic. Traitors can also attack. Off = plain crew, sabotage only.')}${T('qk',set.quick,'Quick mode (3+)','Allow starting with only 3 players')}${mx}${host?'<button class="tag" data-a="bot">+ Add bot</button>':''}</div>
+  <div class="row" style="flex-wrap:wrap"><span class="tag">${fmt(R.match)} match</span><span class="tag">${R.meet} meetings</span><span class="tag">${tc} traitor${tc>1?'s':''}</span><span class="tag">${crew*R.tasks} shared tasks</span><span class="tag">${R.tasks} per player</span><span class="tag">${R.sabMax} sabotages</span>${set.roles?`<span class="tag">${R.atkMax} attacks</span>`:''}</div>
+  <div class="row" style="flex-wrap:wrap">${T('cl',set.classic,'Classic mode '+(set.classic?'on':'off'),set.classic?'Standard rules: 4:00 match, 2 meetings, 3 sabotages. Turn off for fast and loud: 3:00, 3 meetings, 4 sabotages, shorter cooldowns.':'Fast and loud: 3:00 match, 3 meetings, 4 sabotages, shorter cooldowns. Turn on for standard rules.')}${T('rv',rev,'Reveal on ejection '+(rev?'on':'off'),'Show the role of an ejected player')}${T('rl',set.roles,'Special roles '+(set.roles?'on':'off'),'Crew get roles: Detective, Engineer, Guardian, Scientist, Scout, Medic. Traitors can also attack. Off = plain crew, sabotage only.')}${T('qk',set.quick,'Quick mode (3+)','Allow starting with only 3 players')}${mx}${host?lenTasks(set,R):''}${host?'<button class="tag" data-a="bot">+ Add bot</button>':''}</div>
   ${S.err?`<div class="alert" role="alert">${esc(S.err)}</div>`:''}
   ${chatBox('lobby','Lobby chat',G.msgs,!G.chatOff,'','','')}
   <div style="margin-top:auto" class="card">${host?`<button class="btn" data-a="start" ${ok?'':'disabled'}>Start match</button><div class="mut" style="text-align:center">${ok?'You are the host.':'Need at least '+min+' players to start.'}</div>`:'<div class="mut" style="text-align:center">Waiting for the host to start...</div>'}<button class="btn sec" data-a="leave">Leave room</button></div>`},
-home(){const a=S.acct,acct=a?`<div class="card"><div class="row sp"><div><div class="h">${esc(a.user)}</div><div class="mut" style="font-size:12px">${a.stats.games} games - ${a.stats.wins} wins - ${a.stats.tasks} tasks</div></div><button class="tag" data-a="logout">Sign out</button></div></div>`
-  :`<div class="card"><div class="h">Account (optional)</div><div class="mut" style="font-size:12px">Guests can play too. An account keeps your stats. Use HTTPS when you play online.</div><input type="text" id="au" maxlength="16" placeholder="Account name" autocomplete="username" value="${esc(S.au)}" aria-label="Account name"><input type="password" id="ap" maxlength="64" placeholder="Password (8+ characters)" autocomplete="current-password" aria-label="Password"><div class="row"><button class="btn sec" data-a="login" style="height:44px">Sign in</button><button class="btn sec" data-a="register" style="height:44px">Create account</button></div></div>`;
+login(){return `<div class="card" style="align-items:center;text-align:center;padding:30px 16px">${LOGO(96)}<div class="h amb" style="font-size:26px">Traitor in the Room</div><div class="mut">Sign in to play. Pick your nickname next.</div></div>
+  <div class="card"><div id="gbtn" style="min-height:44px;display:flex;justify-content:center"></div>${S.gid?'':'<div class="mut" style="font-size:12px;text-align:center">Google sign-in appears here once the server has a Google client ID.</div>'}
+  <div class="mut" style="text-align:center;font-size:12px">or use a game account</div>
+  <input type="text" id="au" maxlength="16" placeholder="Account name" autocomplete="username" value="${esc(S.au)}" aria-label="Account name"><input type="password" id="ap" maxlength="64" placeholder="Password (8+ characters)" autocomplete="current-password" aria-label="Password">
+  <div class="row"><button class="btn" data-a="login" style="height:46px">Sign in</button><button class="btn sec" data-a="register" style="height:46px">Create account</button></div></div>
+  ${S.err?`<div class="alert" role="alert">${esc(S.err)}</div>`:''}<button class="tag" data-a="guest" style="align-self:center">Play as guest</button>`},
+nick(){const n=S.dn!=null?S.dn:myNick(),p=S.dp!=null?S.dp:myPic();return `<div class="card" style="align-items:center;text-align:center"><div class="h amb" style="font-size:22px">Your player profile</div>
+  ${AV({name:n||'?',col:'#FFB020',pic:p}).replace('class="av"','class="av big"')}<div class="mut" style="font-size:12px">No photo? Your nickname's first letter is your avatar.</div>
+  <input type="text" id="nk" maxlength="12" placeholder="Nickname (2-12 characters)" value="${esc(n)}" aria-label="Nickname">
+  <input type="file" id="pf" accept="image/*" style="display:none"><div class="row"><button class="btn sec" data-a="pickpic" style="height:44px">${p?'Change photo':'Add photo (optional)'}</button>${p?'<button class="btn sec" data-a="rmpic" style="height:44px">Remove</button>':''}</div>
+  ${S.err?`<div class="alert" role="alert">${esc(S.err)}</div>`:''}<button class="btn" data-a="savenick">Continue</button></div>`},
+home(){const a=S.acct,acct=a?`<div class="card"><div class="row sp"><div class="row">${AV({name:myNick()||a.user,col:'#FFB020',pic:myPic()})}<div><div class="h">${esc(myNick()||a.user)}</div><div class="mut" style="font-size:12px">${a.stats.games} games - ${a.stats.wins} wins - ${a.stats.tasks} tasks</div><div class="mut" style="font-size:12px"><span class="amb">${a.cr||0} credits</span></div></div></div><span class="row" style="gap:6px"><button class="tag" data-a="shop">Shop</button><button class="tag" data-a="editprof">Edit</button><button class="tag" data-a="logout">Sign out</button></span></div></div>`
+  :`<div class="card"><div class="row sp"><div class="row">${AV({name:myNick()||'?',col:'#FFB020',pic:myPic()})}<div><div class="h">${esc(myNick()||'Guest')}</div><div class="mut" style="font-size:12px">Sign in with an account to earn credits.</div></div></div><span class="row" style="gap:6px"><button class="tag" data-a="editprof">Edit</button><button class="tag" data-a="logout">Sign in</button></span></div></div>`
+  ,old=`<div class="card"><div class="h">Account (optional)</div><div class="mut" style="font-size:12px">Guests can play too. An account keeps your stats. Use HTTPS when you play online.</div><input type="text" id="au" maxlength="16" placeholder="Account name" autocomplete="username" value="${esc(S.au)}" aria-label="Account name"><input type="password" id="ap" maxlength="64" placeholder="Password (8+ characters)" autocomplete="current-password" aria-label="Password"><div class="row"><button class="btn sec" data-a="login" style="height:44px">Sign in</button><button class="btn sec" data-a="register" style="height:44px">Create account</button></div></div>`;
   return head()+`<div class="card" style="align-items:center;text-align:center;padding:26px 16px">${LOGO(88)}<div class="h amb" style="font-size:24px">Traitor in the Room</div><div class="mut">Find the traitor before the reactor fails.</div></div>
-  <input type="text" id="nm" maxlength="12" placeholder="Your name" value="${esc(S.name)}" aria-label="Your name">
+  <input type="text" id="nm" maxlength="12" placeholder="Your name" value="${esc(S.name||myNick())}" aria-label="Your name">
   <button class="btn" data-a="create">Create room</button>
   <div class="row"><input type="text" id="jc" maxlength="4" placeholder="CODE" value="${esc(S.jc)}" aria-label="Room code" style="text-transform:uppercase;letter-spacing:.2em"><button class="btn sec" style="width:120px" data-a="join">Join</button></div>
   ${S.err?`<div class="alert" role="alert">${esc(S.err)}</div>`:''}${acct}${installCard()}`},
+shop(){const a=S.acct;if(!a)return head()+`<div class="card"><div class="mut">Sign in with an account to earn credits and use the shop.</div></div><button class="btn sec" data-a="shopback">Back</button>`;
+  const own=a.own||[],eq=a.eq||{},list=S.shop||[],pv=it=>it.kind==='frame'?`<div style="width:44px;display:flex;justify-content:center">${AV({name:myNick()||'?',col:'#FFB020',pic:myPic(),fr:it.id})}</div>`:'';
+  const rows=k=>list.filter(i=>i.kind===k).map(it=>{const has=own.includes(it.id),on=eq[k]===it.id;
+    return `<div class="row" style="min-height:54px;border-bottom:1px solid #1E2740">${pv(it)}<div class="grow"><div>${it.kind==='title'?`<span class="ti" style="margin:0">${esc(it.name)}</span>`:esc(it.name)}</div><div class="mut" style="font-size:12px">${has?(on?'Equipped':'Owned'):it.price+' credits'}</div></div>${has?`<button class="tag ${on?'on':''}" data-eq="${on?'':esc(it.id)}" data-kind="${esc(k)}">${on?'Unequip':'Equip'}</button>`:`<button class="tag" data-buy="${esc(it.id)}" ${(a.cr||0)<it.price?'disabled':''}>Buy</button>`}</div>`}).join('');
+  return head()+`<div class="card"><div class="row sp"><div class="h">Shop</div><span class="amb mono">${a.cr||0} credits</span></div><div class="mut" style="font-size:12px">Everything here is cosmetic. Nothing changes how a match plays. You earn credits by playing signed in: 10 for finishing, +20 for a win, +3 per task, +10 for MVP (matches with bots only, or under a minute, pay a third).</div></div>
+  <div class="card" style="padding:2px 14px"><div class="h" style="padding:10px 0 4px">Avatar rings</div>${rows('frame')}</div><div class="card" style="padding:2px 14px"><div class="h" style="padding:10px 0 4px">Name titles</div>${rows('title')}</div>
+  ${S.err?`<div class="alert" role="alert">${esc(S.err)}</div>`:''}<button class="btn sec" data-a="shopback">Back</button>`},
 reveal(){const me=G.me,t=me.role==='traitor',partner=t?G.P.filter(p=>p.role==='traitor'&&p!==me).map(p=>p.name).join(', '):'';
   return head()+`<div class="card" style="align-items:center;text-align:center;padding:28px 16px;min-height:300px;justify-content:center;border-color:${S.peek?(t?'#FF5C6C':'#3DDC97'):'var(--line)'}">
   ${S.peek?`<div class="h" style="font-size:38px;color:${t?'var(--bad)':'var(--ok)'}">${t?'TRAITOR':'CREW'}</div><div>${t?'Blend in. Sabotage the reactor. Do not get voted out.':'Finish your tasks. Find the traitor.'}</div>${G.ab?`<div class="pill">${esc(G.ab.name)}</div><div class="mut">${esc(G.ab.desc)}</div>`:''}${t&&G.atk?`<div class="mut">You can also attack a crew member who is alone with you.</div>`:''}${partner?`<div class="pill">Your partner: ${esc(partner)}</div>`:''}`:`<div class="h" style="font-size:22px">Your role is hidden</div><div class="mut">Hold the button to peek. It hides if you switch tabs.</div>`}</div>
@@ -242,7 +332,7 @@ play(){const me=G.me,tr=me.role==='traitor',left=G.mcd>0;
   const mine=G.mine.filter(t=>t.done).length;
   return head()+`<div class="row sp"><div class="h" style="font-size:26px" id="clk"></div><span class="pill" data-tip="${tr?'Sabotage, blend in, avoid the vote':'Finish tasks and find the traitor'}">${tr?'Traitor':'Crew'}${G.ab?' - '+esc(G.ab.name):''}</span></div>
   <div class="card"><div class="row sp"><span class="mut">Crew progress</span><span class="mut">${G.done} of ${G.total}</span></div><div class="bar"><i id="cb"></i></div></div>${sab}
-  <div class="card"><div class="row sp"><div class="h">Your tasks</div><span class="mut">${mine} of ${TASKS}${tr?'':' done'}</span></div>${taskRows(false)}${tr?'<div class="mut" style="font-size:12px">Each task you finish also trims 8 seconds off your sabotage cooldown.</div>':''}</div>${reqs}
+  <div class="card"><div class="row sp"><div class="h">Your tasks</div><span class="mut">${mine} of ${G.R.tasks}${tr?'':' done'}</span></div>${taskRows(false)}${tr?'<div class="mut" style="font-size:12px">Each task you finish also trims 8 seconds off your sabotage cooldown.</div>':''}</div>${reqs}
   ${tr?`<div class="card"><div class="row sp"><div class="h" style="color:var(--bad)">Sabotage</div><span class="mut">${G.sabUsed} of ${G.R.sabMax} used</span></div><div class="mut">Alone time</div><div class="bar"><i id="al" style="background:var(--amb)"></i></div><button class="btn bad" data-a="sab" data-tip="Needs you alone at your station and no pair task running.${dev==='PC'?' Key: S':''}" ${G.sab||G.sabCd>0||G.sabUsed>=G.R.sabMax||G.alone<50?'disabled':''}>Sabotage reactor</button><div class="mut">Cooldown: <span id="cdn"></span>. Needs you alone at your station.</div></div>`:''}
   ${abilityCard()}${attackCard()}${notebook(false)}
   ${S.confirm?`<div class="card"><div>Call a meeting? ${G.meet} left.</div><div class="row"><button class="btn sec" data-a="no">Cancel</button><button class="btn bad" data-a="meet">Call it</button></div></div>`:`<button class="btn sec" data-a="ask" data-tip="${dev==='PC'?'Key: M':'Call everyone to discuss'}" ${G.meet<1||left?'disabled':''}>Call meeting (${G.meet} left) <span id="mcd" class="mono"></span></button>`}
@@ -251,7 +341,7 @@ ghost(){if(G.task)return head()+taskCard(G.task)+`<button class="btn sec" data-a
   const crew=G.me.role==='crew',mine=G.mine.filter(t=>t.done).length;
   return head()+`<div class="card"><div class="h" style="font-size:22px">You are out</div><div class="mut">${crew?'You can still finish your own tasks as a ghost. They count for the crew.':'Watch only. Crew progress and the match clock keep running.'}</div></div>
   <div class="row sp"><div class="h" style="font-size:26px" id="clk"></div><span class="mut">${G.done} of ${G.total} tasks</span></div><div class="bar"><i id="cb"></i></div>
-  ${crew?`<div class="card"><div class="row sp"><div class="h">Your tasks</div><span class="mut">${mine} of ${TASKS} done</span></div>${taskRows(true)}</div>`:''}${W?'':ghostChat()}${!W&&dev==='PC'&&S.help?keysCard():''}${notebook(false)}${logCard()}`},
+  ${crew?`<div class="card"><div class="row sp"><div class="h">Your tasks</div><span class="mut">${mine} of ${G.R.tasks} done</span></div>${taskRows(true)}</div>`:''}${W?'':ghostChat()}${!W&&dev==='PC'&&S.help?keysCard():''}${notebook(false)}${logCard()}`},
 meeting(){const ph=G.phase,al=G.P.filter(p=>p.alive&&p!==G.me),nm=id=>{const p=G.P.find(x=>x.id===id);return p?esc(p.name):'?'};
   const trail=G.P.filter(p=>p.alive).map(p=>`<div class="mut" style="font-size:12px">${esc(p.name)}: ${p.trail.slice(-3).map(x=>x.st).join(' > ')}</div>`).join('');
   const prs=G.pl.length?G.pl.map(x=>`<div style="font-size:13px"><span class="mono mut">${fmt(x.t)}</span> ${nm(x.a)} + ${nm(x.b)} at ${x.st}</div>`).join(''):'<div class="mut" style="font-size:13px">No verified pairs yet.</div>';
@@ -263,28 +353,50 @@ meeting(){const ph=G.phase,al=G.P.filter(p=>p.alive&&p!==G.me),nm=id=>{const p=G
   <div class="card"><div class="h">Verified pairs</div>${prs}<div class="h" style="margin-top:6px">Cleared suspects</div>${clr}<div class="mut" style="font-size:12px">A sabotage needs the traitor alone. Anyone verified in a pair at that moment is cleared for that alarm only.</div></div>${notebook(true)}${vote}${W?'':chatPanel()}`},
 eject(){const e=G.eject,rev=e.reveal;return head()+`<div class="card ej"><div class="stars"></div>${e.out?`<div class="flyer">${AV(e.out)}</div>`:''}<div class="ejt ${e.out?'':'now'}"><div class="mut">Votes counted</div>${e.out?`${AV(e.out)}<div class="h" style="font-size:26px">${esc(e.out.name)} was ejected</div><div class="${rev&&e.out.role==='traitor'?'amb':'mut'}" style="font-size:17px">${rev?(e.out.role==='traitor'?'They were a traitor.':'They were not a traitor.'):'Role stays hidden.'}</div>`:`<div class="h" style="font-size:26px">No one was ejected</div><div class="mut">Tie or skip won.</div>`}</div></div>`},
 results(){const e=G.end,won=(e.w==='crew')===(G.me.role==='crew'),mvp=G.P.find(p=>p.id===e.mvp)||G.P[0];
-  return head()+`<div class="card" style="text-align:center"><div class="h" style="font-size:32px;color:${e.w==='crew'?'var(--ok)':'var(--bad)'}">${e.w==='crew'?'CREW WINS':'TRAITORS WIN'}</div><div>${e.why}</div><div class="mut">${won?'You won this match.':'You lost this match.'}</div></div>
-  <div class="card"><div class="h">All roles</div>${G.P.map(p=>`<div class="row">${AV(p)}<div class="grow">${esc(p.name)}</div><span class="pill" style="${p.role==='traitor'?'color:var(--bad);background:rgba(255,92,108,.14)':''}">${p.role}${p.cls?' - '+CLSN[p.cls]:''}</span></div>`).join('')}</div>
+  return head()+`<div class="card" style="text-align:center"><div class="h" style="font-size:32px;color:${e.w==='crew'?'var(--ok)':'var(--bad)'}">${e.w==='crew'?'CREW WINS':'TRAITORS WIN'}</div><div>${e.why}</div><div class="mut">${won?'You won this match.':'You lost this match.'}</div>${G.earn!=null?`<div class="pill amb" data-tip="Credits for this match. Spend them in the shop on the home screen.">+${G.earn} credits</div>`:''}</div>
+  <div class="card"><div class="h">All roles</div>${G.P.map(p=>`<div class="row">${AV(p)}<div class="grow">${NT(p)}</div><span class="pill" style="${p.role==='traitor'?'color:var(--bad);background:rgba(255,92,108,.14)':''}">${p.role}${p.cls?' - '+CLSN[p.cls]:''}</span></div>`).join('')}</div>
   <div class="card"><div class="h">MVP: ${esc(mvp.name)}</div><div class="mut">Score = tasks done x 2, plus correct votes x 3, plus 1 for each pair task you helped with.</div></div>
-  ${logCard()}<button class="btn sec" data-a="share" data-tip="Share the result and timeline">Share report</button>${G.host===G.you?`<button class="btn" data-a="again">Play again</button>`:`<div class="mut" style="text-align:center">Waiting for the host to restart...</div>`}`}};
+  ${logCard()}<div class="row"><button class="btn sec" data-a="shareimg" data-tip="A picture of the result, roles and timeline">Share as image</button><button class="btn sec" data-a="share" data-tip="Share the result and timeline as text">Share as text</button></div>${G.host===G.you?`<button class="btn" data-a="again">Play again</button>`:`<div class="mut" style="text-align:center">Waiting for the host to restart...</div>`}`}};
 function roster(){const rows=G.P.map(p=>{const st=!p.alive?'Out':(!p.online&&!p.bot)?'Offline':'In play',mu=G.muted.includes(p.id);
-  return `<div class="row" style="min-height:46px;border-bottom:1px solid #1E2740" data-tip="${esc(p.name)}: ${p.bot?'bot':p.dev}, ${st.toLowerCase()}">${AV(p)}<div class="grow"><div>${esc(p.name)}${p.id===G.you?' (you)':''}</div><div class="mut" style="font-size:12px">${p.bot?'Bot':p.dev} - ${st}</div></div>${p.id!==G.you&&!p.bot?`<button class="tag sm" data-mute="${p.id}">${mu?'Unmute':'Mute'}</button>`:''}</div>`}).join('');
+  return `<div class="row" style="min-height:46px;border-bottom:1px solid #1E2740" data-tip="${esc(p.name)}: ${p.bot?'bot':p.dev}, ${st.toLowerCase()}">${AV(p)}<div class="grow"><div>${NT(p)}${p.id===G.you?' (you)':''}</div><div class="mut" style="font-size:12px">${p.bot?'Bot':p.dev} - ${st}</div></div>${p.id!==G.you&&!p.bot?`<button class="tag sm" data-mute="${p.id}">${mu?'Unmute':'Mute'}</button>`:''}</div>`}).join('');
   return `<div class="card" style="padding:4px 14px"><div class="h" style="padding:10px 0 4px">Players</div>${rows}</div><div class="card"><div class="row sp"><span class="mut">Crew progress</span><span class="mut">${G.done} of ${G.total}</span></div><div class="bar"><i id="cb"></i></div><div class="mut" style="font-size:12px">Meetings left: ${G.meet}</div></div>`}
 function sidePanel(){const tr=G.me.role==='traitor';return logCard()+(G.ph==='play'&&tr?traitorChat():'')+(!G.me.alive?ghostChat():'')+(dev==='PC'?keysCard():'')+(G.ph==='play'&&!tr&&G.me.alive?`<div class="card"><div class="mut" style="font-size:13px">Chat opens during meetings, with Mute and Report on every message. Pick Alone or With partner for each task.</div></div>`:'')}
-function render(){const n=$('#nm'),j=$('#jc'),au=$('#au'),ap=$('#ap');if(n)S.name=n.value;if(j)S.jc=j.value.toUpperCase();if(au)S.au=au.value;if(ap)S.ap=ap.value;
+function render(){const nk=$('#nk');if(nk)S.dn=nk.value;if(S.scr==='home'&&!S.acct&&!S.guest)S.scr='login';const n=$('#nm'),j=$('#jc'),au=$('#au'),ap=$('#ap');if(n)S.name=n.value;if(j)S.jc=j.value.toUpperCase();if(au)S.au=au.value;if(ap)S.ap=ap.value;
   const keep={};document.querySelectorAll('input[data-ch]').forEach(i=>{keep[i.dataset.ch]={v:i.value,f:document.activeElement===i,s:i.selectionStart}});
   const app=$('#app'),scr=S.scr;W=!!G&&innerWidth>=1000&&['play','ghost','meeting','eject'].includes(scr);
   app.className=W?'wide':(innerWidth>=1000&&['results','lobby'].includes(scr)?'mid':'');
   app.innerHTML=W?`<div class="col side">${roster()}</div><div class="col">${V[scr]()}</div><div class="col side">${scr==='meeting'?chatPanel()+(dev==='PC'?keysCard():''):sidePanel()}</div>`:V[scr]();
   Object.keys(keep).forEach(ch=>{const c=document.querySelector(`input[data-ch="${ch}"]`);if(c){c.value=keep[ch].v;if(keep[ch].f){c.focus();try{c.setSelectionRange(keep[ch].s,keep[ch].s)}catch(e){}}}});
   document.querySelectorAll('.chat').forEach(c=>c.scrollTop=c.scrollHeight);
-  if(LT&&LT.type==='timing'&&!LT.loop){LT.loop=1;tloop()}hud()}
+  if(LT&&LT.type==='timing'&&!LT.loop){LT.loop=1;tloop()}hud();if(S.scr==='login')gRender()}
 let rz=0;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(render,150)});
 function sayNow(ch){const c=document.querySelector(`input[data-ch="${ch}"]`);if(!c)return;const t=c.value.trim();if(t){send({t:'say',txt:t,ch});c.value=''}}
 function reportText(){const e=G.end,mvp=G.P.find(p=>p.id===e.mvp)||G.P[0];
   return `Traitor in the Room (room ${G.code})\n${e.w==='crew'?'CREW WINS':'TRAITORS WIN'}: ${e.why}\nMVP: ${mvp.name}\nRoles: ${G.P.map(p=>p.name+' ('+p.role+')').join(', ')}\nTimeline:\n${G.log.slice(-12).map(l=>fmt(G.R.match-l.t)+' '+l.txt).join('\n')}`}
 async function share(){const text=reportText();try{if(navigator.share){await navigator.share({title:'Traitor in the Room',text});return}}catch(e){if(e&&e.name==='AbortError')return}
   try{await navigator.clipboard.writeText(text);toast('Report copied to the clipboard')}catch(e){toast('Could not copy the report')}}
+/* Report as a picture: drawn on a canvas, nothing leaves the phone except what the player chooses to share. */
+function reportImage(){return new Promise((res,rej)=>{try{const e=G.end,mvp=G.P.find(p=>p.id===e.mvp)||G.P[0],W=1080,H=1350,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+  const F=(w,z,f)=>`${w} ${z}px ${f||"'Chakra Petch',system-ui,sans-serif"}`,wrap=(t,mx,max)=>{const w=String(t).split(' '),o=[];let l='';w.forEach(k=>{const n=l?l+' '+k:k;if(x.measureText(n).width>mx&&l){o.push(l);l=k}else l=n});if(l)o.push(l);return o.slice(0,max||3)};
+  x.fillStyle='#0B0F17';x.fillRect(0,0,W,H);x.fillStyle='rgba(255,176,32,.05)';for(let i=0;i<W;i+=40)x.fillRect(i,0,1,H);for(let i=0;i<H;i+=40)x.fillRect(0,i,W,1);
+  const g=x.createRadialGradient(W/2,0,0,W/2,0,700);g.addColorStop(0,'rgba(255,176,32,.20)');g.addColorStop(1,'rgba(255,176,32,0)');x.fillStyle=g;x.fillRect(0,0,W,700);
+  x.textAlign='center';x.fillStyle='#FFB020';x.font=F('600',34);x.fillText('TRAITOR IN THE ROOM',W/2,86);
+  const crew=e.w==='crew';x.fillStyle=crew?'#3DDC97':'#FF5C6C';x.font=F('700',104);x.fillText(crew?'CREW WINS':'TRAITORS WIN',W/2,212);
+  x.fillStyle='#E8ECF4';x.font=F('500',34);wrap(e.why,W-200,2).forEach((l,i)=>x.fillText(l,W/2,274+i*44));
+  x.textAlign='left';x.fillStyle='#141A26';x.strokeStyle='#263149';x.lineWidth=2;
+  const box=(y,h)=>{x.fillStyle='#141A26';x.strokeStyle='#263149';x.lineWidth=2;x.beginPath();x.roundRect?x.roundRect(60,y,W-120,h,22):x.rect(60,y,W-120,h);x.fill();x.stroke()};
+  const ry=380,rh=G.P.length*62+78;box(ry,rh);x.fillStyle='#93A0BA';x.font=F('600',26);x.fillText('ROLES',92,ry+48);
+  G.P.forEach((p,i)=>{const y=ry+78+i*62;x.fillStyle=p.col;x.beginPath();x.arc(112,y+22,22,0,7);x.fill();x.fillStyle='#0B0F17';x.font=F('700',24);x.textAlign='center';x.fillText((p.name||'?')[0].toUpperCase(),112,y+31);
+    x.textAlign='left';x.fillStyle='#E8ECF4';x.font=F('600',32);x.fillText(p.name+(p.id===mvp.id?'  (MVP)':''),156,y+32);
+    x.textAlign='right';x.fillStyle=p.role==='traitor'?'#FF5C6C':'#3DDC97';x.font=F('600',28);x.fillText(p.role.toUpperCase()+(p.cls?' - '+CLSN[p.cls]:''),W-92,y+31);x.textAlign='left'});
+  const ty=ry+rh+28,th=H-ty-110;box(ty,th);x.fillStyle='#93A0BA';x.font=F('600',26);x.fillText('TIMELINE',92,ty+48);
+  const rows=Math.max(1,Math.floor((th-78)/40));G.log.slice(-rows).forEach((l,i)=>{const y=ty+88+i*40;x.fillStyle='#93A0BA';x.font=F('500',26,"'IBM Plex Mono',ui-monospace,monospace");x.fillText(fmt(G.R.match-l.t),92,y);x.fillStyle='#E8ECF4';x.font=F('500',27);
+    let t=String(l.txt);while(x.measureText(t).width>W-340&&t.length>8)t=t.slice(0,-2);x.fillText(t===String(l.txt)?t:t+'...',200,y)});
+  x.textAlign='center';x.fillStyle='#93A0BA';x.font=F('500',26);x.fillText('Room '+G.code+'  -  '+new Date().toLocaleDateString(),W/2,H-52);
+  c.toBlob(b=>b?res(b):rej(new Error('no image')),'image/png')}catch(err){rej(err)}})}
+async function shareImg(){try{const blob=await reportImage(),f=new File([blob],'traitor-report.png',{type:'image/png'});
+  if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:'Traitor in the Room',text:reportText().split('\n').slice(0,3).join('\n')});return}catch(e){if(e&&e.name==='AbortError')return}}
+  const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='traitor-report.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);toast('Report image saved')}catch(e){toast('Could not make the image')}}
 /* ============ EVENTS ============ */
 function startHold(b){if(hold||!b)return;const k=b.dataset.hold;hold={k,t0:performance.now(),ms:k==='pair'?3000:k==='save'?1200:k==='fix'&&G.ab&&G.ab.cls==='engineer'?900:2000,id:+b.dataset.id};if(k==='fix')send({t:'fix_start'});else if(k==='pair')send({t:'pair_hold'});else if(k==='save')send({t:'medic_start',id:hold.id})}
 function endHold(){if(hold){hold=null;const f=$('#hf');if(f)f.style.width='0'}}
@@ -295,6 +407,8 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   if(d.ab!==undefined){send({t:'ab',id:d.ab==='x'?undefined:+d.ab});return}
   if(d.atk!==undefined){if(d.atk!=='')send({t:'attack',id:+d.atk});return}
   if(d.share!==undefined){const n=G.notes[+d.share];if(n)send({t:'say',txt:n.txt.slice(0,100),ch:'meet'});return}
+  if(d.buy){raw({t:'buy',id:d.buy});return}
+  if(d.eq!==undefined){raw({t:'equip',id:d.eq,kind:d.kind});return}
   if(d.mute){send({t:'mute',id:+d.mute});return}
   if(d.rep){send({t:'report',mid:+d.rep});return}
   if(d.hrm){send({t:'hrm',mid:+d.hrm});return}
@@ -305,16 +419,32 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   if(a==='snd'){AUD.on=!AUD.on;sv('snd',AUD.on?'1':'0');if(AUD.on)SND.ok();render();return}
   if(a==='create'||a==='join'){const nm=$('#nm'),jc=$('#jc');S.name=((nm&&nm.value)||'').trim()||(S.acct?S.acct.user:'Player');sv('name',S.name);const code=((jc&&jc.value)||'').toUpperCase().trim();
     if(a==='join'&&code.length!==4){S.err='Enter the 4-letter room code.';render();return}
-    const go=()=>send(a==='create'?{t:'create',name:S.name,dev,did}:{t:'join',code,name:S.name,dev,did});
+    const go=()=>send(a==='create'?{t:'create',name:S.name,dev,did,pic:myPic()}:{t:'join',code,name:S.name,dev,did,pic:myPic()});
     ws&&ws.readyState===1?go():connect(go);return}
+  if(LT&&taskAct(a)){render();return}
+  if(a==='mus'){MUS.on=!MUS.on;sv('mus',MUS.on?'1':'0');render();return}
+  if(a==='hap'){HAP.on=!HAP.on;sv('hap',HAP.on?'1':'0');if(HAP.on)buzz([30,40,30]);render();return}
+  if(a==='guest'){S.guest=true;sv('guest','1');S.err='';S.scr=myNick()?'home':'nick';render();return}
+  if(a==='shop'){S.err='';S.scr='shop';render();return}
+  if(a==='shopback'){S.err='';S.scr='home';render();return}
+  if(a==='editprof'){S.dn=null;S.dp=null;S.err='';S.scr='nick';render();return}
+  if(a==='pickpic'){const f=$('#pf');if(f)f.click();return}
+  if(a==='rmpic'){S.dp='';render();return}
+  if(a==='savenick'){const el=$('#nk'),nk=((el&&el.value)||'').replace(/[<>&"'`]/g,'').trim().slice(0,12),pic=S.dp!=null?S.dp:myPic();if(nk.length<2){S.err='Nickname must be 2-12 characters.';S.dn=nk;render();return}
+    S.err='';S.name=nk;sv('name',nk);if(S.acct){S.saving=1;S.dn=null;S.dp=null;raw({t:'profile',nick:nk,pic});toast('Saved');return}
+    sv('nick',nk);sv('pic',pic||null);S.dn=null;S.dp=null;S.scr='home';render();return}
   if(a==='login'||a==='register'){const u=$('#au'),p=$('#ap');if(!u||!p)return;S.au=u.value;const go=()=>raw({t:a,user:u.value,pass:p.value});ws&&ws.readyState===1?go():connect(go);p.value='';S.ap='';return}
-  if(a==='logout'){raw({t:'logout',sess:ld('as')});S.acct=null;sv('au');sv('as');render();return}
+  if(a==='logout'){raw({t:'logout',sess:ld('as')});S.acct=null;S.guest=false;sv('au');sv('as');sv('guest');S.scr='login';render();return}
   const M={cl:1,qk:1,rv:1,rl:1};
   if(M[a]){const s=G.set,r0=s.reveal==null?traitorsFor(G.P.length)===1:s.reveal;send({t:'settings',classic:a==='cl'?!s.classic:s.classic,quick:a==='qk'?!s.quick:s.quick,reveal:a==='rv'?!r0:s.reveal,roles:a==='rl'?!s.roles:s.roles});return}
   if(a==='mxm'||a==='mxp'){send({t:'settings',max:G.set.max+(a==='mxp'?1:-1)});return}
+  if(a==='lnm'||a==='lnp'){send({t:'settings',len:rulesFor(G.set).match+(a==='lnp'?30:-30)});return}
+  if(a==='lna'){send({t:'settings',len:null});return}
+  if(a==='tkm'||a==='tkp'){send({t:'settings',tasks:rulesFor(G.set).tasks+(a==='tkp'?1:-1)});return}
   if(a==='bot'){send({t:'addbot'});return}
   if(a==='say'){sayNow(d.ch);return}
   if(a==='share'){share();return}
+  if(a==='shareimg'){shareImg();return}
   if(a==='pcancel'){send({t:'pair_cancel'});return}
   if(/^pj\d$/.test(a)){send({t:'pair_join',a:+a[2]});return}
   if(a==='start'||a==='again'){send({t:a});return}
@@ -366,7 +496,7 @@ function route(e){const k=e.key,scr=S.scr;
       if(/^[0-9]$/.test(k)){if(LT.type==='seq')return click('[data-a=n'+k+']');if(LT.type==='memory'||LT.type==='code')return click('[data-a=k'+k+']');if(LT.type==='sort')return click('[data-a=s'+(+k-1)+']')}
       if(k==='Backspace'&&(LT.type==='memory'||LT.type==='code'))return click('[data-a=kc]');return false}
     if(G.mypair){if(k===' '){const h=document.querySelector('[data-hold]');if(h){if(!e.repeat)startHold(h);return true}}if(k==='Escape')return click('[data-a=pcancel]');return false}
-    if(/^Digit[1-3]$/.test(e.code))return click('[data-a='+(e.shiftKey?'p':'t')+(+e.code[5]-1)+']');
+    if(/^Digit[1-5]$/.test(e.code))return click('[data-a='+(e.shiftKey?'p':'t')+(+e.code[5]-1)+']');
     if(k==='j'||k==='J')return click('[data-a^=pj]');
     if(k===' '){const h=document.querySelector('[data-hold=fix]');if(h){if(!e.repeat)startHold(h);return true}return false}
     if(S.confirm){if(k==='y'||k==='Y'||k==='Enter')return click('[data-a=meet]');if(k==='n'||k==='N'||k==='Escape')return click('[data-a=no]');return false}
@@ -392,7 +522,15 @@ addEventListener('beforeinstallprompt',e=>{e.preventDefault();S.inst=e;if(S.scr=
 addEventListener('appinstalled',()=>{S.inst=null;toast('Installed');if(S.scr==='home')render()});
 addEventListener('offline',()=>toast('You are offline. The game will reconnect.'));addEventListener('online',()=>{toast('Back online');if(ws&&ws.readyState!==1)connect()});
 if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1'))addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+/* ============ PROFILE PHOTO + GOOGLE SIGN-IN ============ */
+addEventListener('change',e=>{if(!e.target||e.target.id!=='pf'||!e.target.files[0])return;const url=URL.createObjectURL(e.target.files[0]),im=new Image();
+  im.onload=()=>{const c=document.createElement('canvas'),z=Math.min(im.width,im.height);c.width=c.height=64;c.getContext('2d').drawImage(im,(im.width-z)/2,(im.height-z)/2,z,z,0,0,64,64);
+    let q=.7,d=c.toDataURL('image/jpeg',q);while(d.length>5400&&q>.2){q-=.1;d=c.toDataURL('image/jpeg',q)}URL.revokeObjectURL(url);S.dp=d.length<=5500?d:'';render()};im.onerror=()=>{S.err='That image could not be read.';render()};im.src=url});
+let gLoaded=0;
+function gInit(){if(!S.gid||!window.google||!google.accounts)return;if(!gInit.done){gInit.done=1;google.accounts.id.initialize({client_id:S.gid,callback:r=>{const go=()=>raw({t:'google',cred:r.credential});ws&&ws.readyState===1?go():connect(go)}})}
+  const b=$('#gbtn');if(b&&!b.firstChild)google.accounts.id.renderButton(b,{theme:'filled_black',size:'large',shape:'pill',text:'continue_with',width:280})}
+function gRender(){if(!gLoaded){gLoaded=1;fetch('/config.json').then(r=>r.json()).then(c=>{if(!c.google)return;S.gid=c.google;if(S.scr==='login')render();const sc=document.createElement('script');sc.src='https://accounts.google.com/gsi/client';sc.async=true;sc.onload=()=>{gInit()};document.head.appendChild(sc)}).catch(()=>{})}else gInit()}
 let wl=null;async function wake(on){try{if(on&&!wl&&navigator.wakeLock&&!document.hidden){wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>{wl=null})}else if(!on&&wl){await wl.release();wl=null}}catch(e){wl=null}}
 setInterval(()=>wake(!!G&&['reveal','play','meeting','eject'].includes(G.ph)),4000);
-render();if(ld('token')&&ld('code'))connect();else if(ld('au')&&ld('as'))connect();
+render();if(ld('token')&&ld('code'))connect();else if(ld('au')&&ld('as'))connect();else if(S.scr==='login')connect();
 </script></body></html>
