@@ -1,0 +1,10 @@
+{
+  "name": "traitor-in-the-room",
+  "version": "0.5.0",
+  "description": "Stage 4: PWA install, icons, APK path, creator dashboard",
+  "main": "server.js",
+  "scripts": { "start": "node server.js", "test": "node run-tests.js", "load": "node loadtest.js" },
+  "dependencies": { "ws": "^8.18.0" },
+  "optionalDependencies": { "@sentry/node": "^8.0.0" },
+  "engines": { "node": ">=18" }
+}

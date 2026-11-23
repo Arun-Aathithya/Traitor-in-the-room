@@ -1,0 +1,22 @@
+{
+  "packageId": "com.CHANGEME.traitorintheroom",
+  "host": "YOUR-DOMAIN.example",
+  "name": "Traitor in the Room",
+  "launcherName": "Traitor",
+  "display": "standalone",
+  "orientation": "default",
+  "themeColor": "#0B0F17",
+  "navigationColor": "#0B0F17",
+  "backgroundColor": "#0B0F17",
+  "startUrl": "/?source=twa",
+  "iconUrl": "https://YOUR-DOMAIN.example/icons/icon-512.png",
+  "maskableIconUrl": "https://YOUR-DOMAIN.example/icons/icon-maskable-512.png",
+  "webManifestUrl": "https://YOUR-DOMAIN.example/manifest.webmanifest",
+  "appVersion": "0.5.0",
+  "appVersionCode": 1,
+  "enableNotifications": false,
+  "enableSiteSettingsShortcut": false,
+  "fallbackType": "customtabs",
+  "signingKey": { "path": "./android.keystore", "alias": "traitor" },
+  "minSdkVersion": 21
+}

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<!-- TRAITOR IN THE ROOM - STAGE 3 CLIENT (talks to server.js). The server decides every rule.
+Done here: logo, accounts (optional), lobby with chat and host controls, role reveal, 11 task types (alone or with a partner), ghost tasks,
+sabotage, meeting with verified pairs, free-text chat channels (lobby, meeting, ghost, traitor), PC layout + keyboard + tooltips,
+sound, haptics, ejection animation, share report. -->
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0B0F17">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Traitor"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Traitor in the Room</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0B0F17;--card:#141A26;--line:#263149;--amb:#FFB020;--txt:#E8ECF4;--mut:#93A0BA;--ok:#3DDC97;--bad:#FF5C6C}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--txt);font:15px/1.4 'IBM Plex Sans',system-ui,sans-serif}
+body{background-image:linear-gradient(rgba(255,176,32,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,176,32,.045) 1px,transparent 1px);background-size:32px 32px}
+#app{max-width:430px;margin:0 auto;min-height:100dvh;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:12px}
+.h{font-family:'Chakra Petch',sans-serif;font-weight:600}.mono{font-family:'IBM Plex Mono',monospace}
+.mut{color:var(--mut);font-size:13px}.amb{color:var(--amb)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.row{display:flex;align-items:center;gap:10px}.sp{justify-content:space-between}.grow{flex:1;min-width:0}
+.btn{border:0;border-radius:14px;height:52px;background:var(--amb);color:#1A1203;font:700 17px 'Chakra Petch',sans-serif;letter-spacing:.04em;width:100%;cursor:pointer;position:relative;overflow:hidden;touch-action:manipulation;user-select:none}
+.btn.sec{background:transparent;color:var(--txt);border:1px solid var(--line)}.btn.bad{background:var(--bad);color:#2a0509}
+.btn:disabled{opacity:.4;cursor:not-allowed}.btn:focus-visible,input:focus-visible,.tag:focus-visible{outline:2px solid var(--amb);outline-offset:2px}
+.fill{position:absolute;left:0;top:0;bottom:0;background:rgba(0,0,0,.28);width:0}
+.pill{font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(255,176,32,.16);color:var(--amb)}
+.tag{font:12px 'IBM Plex Mono',monospace;padding:5px 10px;border-radius:8px;border:1px solid var(--line);color:#B8C2D6;background:none;cursor:pointer}
+.tag.on{border-color:var(--amb);color:var(--amb)}
+.bar{height:10px;border-radius:6px;background:#1E2740;overflow:hidden}.bar i{display:block;height:100%;background:var(--ok);width:0;transition:width .3s}
+.av{width:32px;height:32px;border-radius:50%;color:#0B0F17;font:700 15px 'Chakra Petch';display:flex;align-items:center;justify-content:center;position:relative;flex:none}
+.av svg{position:absolute;right:-4px;bottom:-4px;width:15px;height:15px;background:var(--card);border-radius:50%;padding:2px}
+input[type=text],input[type=password]{background:#0f1420;border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:10px 12px;font:inherit;width:100%}
+.alert{border:2px solid var(--bad);background:#2a1015;border-radius:16px;padding:14px;display:flex;gap:12px;align-items:center}
+.vote{width:100%;text-align:left;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:none;color:var(--txt);display:flex;gap:10px;align-items:center;cursor:pointer;font:inherit}
+.vote.on{border-color:var(--amb);background:rgba(255,176,32,.1)}
+.log{max-height:150px;overflow:auto;display:flex;flex-direction:column;gap:4px;font-size:13px}
+.tag.sm{padding:2px 8px;font-size:11px}.tag:disabled{opacity:.45;cursor:default}
+.chat{max-height:260px;min-height:100px;overflow:auto;display:flex;flex-direction:column;gap:8px}
+.msg{background:#0f1420;border:1px solid var(--line);border-radius:12px;padding:8px 10px;font-size:14px;overflow-wrap:anywhere}
+.msg.me{border-color:rgba(255,176,32,.5)}.msg.hid{color:var(--mut);font-style:italic;font-size:13px}.msg .nm{font:600 13px 'Chakra Petch',sans-serif}
+.col{display:flex;flex-direction:column;gap:12px;min-width:0}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.keys .btn{height:46px;font-size:18px}
+.cell{height:54px;border-radius:10px;background:#1E2740}.cell.hot{background:rgba(255,176,32,.22);box-shadow:0 0 0 1px var(--amb)}.cell.got{background:rgba(61,220,151,.4);box-shadow:0 0 0 1px var(--ok)}
+.ej{position:relative;overflow:hidden;min-height:320px;align-items:center;justify-content:center;text-align:center;padding:40px 16px;margin-top:30px}
+.stars{position:absolute;inset:0;background-image:radial-gradient(1.5px 1.5px at 20% 30%,#fff9,transparent),radial-gradient(1.5px 1.5px at 70% 60%,#fff9,transparent),radial-gradient(1px 1px at 40% 80%,#fff9,transparent),radial-gradient(1px 1px at 85% 20%,#fff9,transparent);background-size:180px 180px;animation:drift 3.6s linear forwards}
+@keyframes drift{to{background-position:-420px 0}}
+.flyer{position:absolute;left:-14%;top:38%;animation:fly 3.1s cubic-bezier(.4,0,.8,.6) forwards}
+@keyframes fly{0%{left:-14%;top:40%;transform:rotate(0) scale(2);opacity:1}70%{opacity:1}100%{left:112%;top:14%;transform:rotate(1080deg) scale(.2);opacity:0}}
+.ejt{position:relative;opacity:0;animation:fadein .6s 1.7s forwards;display:flex;flex-direction:column;gap:8px;align-items:center}
+.ejt.now{opacity:1;animation:none}
+@keyframes fadein{to{opacity:1}}
+#tip{position:fixed;z-index:60;max-width:250px;background:#0f1420;border:1px solid var(--line);color:var(--txt);padding:6px 9px;border-radius:8px;font-size:12px;pointer-events:none;display:none}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#0f1420;border:1px solid var(--amb);border-radius:10px;padding:8px 14px;font-size:13px;z-index:70;display:none;max-width:90vw}
+.col .kb{line-height:1.8}
+#app.mid{max-width:560px}
+#app.wide{max-width:1280px;display:grid;grid-template-columns:270px minmax(0,1fr) 340px;gap:16px;align-items:start}
+#app.wide .side{position:sticky;top:16px;max-height:calc(100dvh - 32px);overflow:auto}
+#app.wide .chat{max-height:calc(100dvh - 420px);min-height:160px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}.flyer,.stars{animation:none}.flyer{display:none}.ejt{opacity:1;animation:none}}
+</style></head><body><div id="app"></div><div id="tip" role="tooltip"></div><div id="toast" role="status"></div>
+<script>
+/* ============ CONSTANTS ============ */
+const COL=['#FF7A8A','#FFB36B','#FFD84D','#A3E86B','#4DE8B0','#5CC8FF','#8E9CFF','#C49BFF'];
+const SH=['M6 1a5 5 0 1 0 0.001 0Z','M1.5 1.5h9v9h-9Z','M6 1L11 10.5H1Z','M6 0.5L11.5 6L6 11.5L0.5 6Z','M3.2 1.2h5.6L11.5 6L8.8 10.8H3.2L0.5 6Z','M4.5 1h3v3.5H11v3H7.5V11h-3V7.5H1v-3h3.5Z','M6 0.8L11 4.6L9.1 10.6H2.9L1 4.6Z','M3.8 1h4.4L11 3.8v4.4L8.2 11H3.8L1 8.2V3.8Z'];
+const TYPEN={seq:'Number sequence',hold:'Hold steady',tap:'Rapid tap',slider:'Dial it in',memory:'Memory check',timing:'Timing',wires:'Wiring',sort:'Sorting',code:'Code entry',drag:'Drag and drop (mouse)',scan:'Hover scan (mouse)'};
+const MINMS={seq:900,hold:1800,tap:1200,slider:900,memory:3000,timing:1000,wires:1500,sort:1200,code:1200,drag:800,scan:1200};
+const WIRES=[['#FF5C6C','Red'],['#FFD84D','Yellow'],['#3DDC97','Green'],['#5CC8FF','Blue'],['#C49BFF','Violet']];
+const TASKS=3,STN=['Reactor','Engine','Lab','Bridge','Cargo','Medbay'];
+const rnd=n=>Math.floor(Math.random()*n),buzz=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
+const fmt=s=>{s=Math.max(0,Math.ceil(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let W=false;
+const ld=k=>{try{return localStorage.getItem(k)}catch(e){return null}},sv=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
+/* ============ SOUND (made with WebAudio, no files) ============ */
+const AUD={ctx:null,on:ld('snd')!=='0'};
+function actx(){if(!AUD.ctx){try{AUD.ctx=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}return AUD.ctx}
+function tone(f,t0,d,ty,v,f2){const c=actx();if(!c||!AUD.on)return;try{const o=c.createOscillator(),g=c.createGain(),n=c.currentTime+t0;o.type=ty||'sine';o.frequency.setValueAtTime(f,n);if(f2)o.frequency.linearRampToValueAtTime(f2,n+d);
+  g.gain.setValueAtTime(0.0001,n);g.gain.linearRampToValueAtTime(v||.1,n+.02);g.gain.exponentialRampToValueAtTime(.0001,n+d);o.connect(g);g.connect(c.destination);o.start(n);o.stop(n+d+.05)}catch(e){}}
+const SND={ok(){tone(660,0,.12);tone(990,.1,.18)},alarm(){for(let i=0;i<3;i++)tone(880,i*.35,.3,'square',.07,520)},meet(){tone(440,0,.18,'triangle',.14);tone(330,.2,.3,'triangle',.14)},
+  eject(){tone(500,0,1.4,'sawtooth',.07,60)},win(){[523,659,784,1047].forEach((f,i)=>tone(f,i*.14,.3,'triangle',.12))},lose(){[392,330,262,196].forEach((f,i)=>tone(f,i*.18,.35,'sawtooth',.07))},msg(){tone(740,0,.07,'sine',.06)}};
+['pointerdown','keydown'].forEach(t=>addEventListener(t,()=>{const c=actx();if(c&&c.state==='suspended')c.resume()},{passive:true}));
+let tt=0;function toast(m){const e=$('#toast');e.textContent=m;e.style.display='block';clearTimeout(tt);tt=setTimeout(()=>e.style.display='none',2600)}
+/* ============ LOGO ============ */
+const LOGO=(z=44)=>`<svg width="${z}" height="${z}" viewBox="0 0 64 64" role="img" aria-label="Traitor in the Room logo"><path d="M32 3L57 17.5V46.5L32 61L7 46.5V17.5Z" fill="#141A26" stroke="#FFB020" stroke-width="3" stroke-linejoin="round"/><circle cx="32" cy="26" r="8" fill="#FFB020"/><path d="M28 31h8l4 17H24Z" fill="#FFB020"/><path d="M32 21.5L35.5 26L32 30.5L28.5 26Z" fill="#141A26"/><circle cx="32" cy="26" r="1.7" fill="#FFB020"/></svg>`;
+const AV=p=>`<div class="av" style="background:${p.col}">${esc(p.name[0])}<svg viewBox="0 0 12 12"><path d="${SH[p.shp]}" fill="${p.col}"/></svg></div>`;
+/* ============ NET ============ */
+const traitorsFor=n=>n>=8?2:1;
+const rulesFor=s=>({...(s.classic?{match:240,meet:2,sabMax:3,atkMax:2}:{match:180,meet:3,sabMax:4,atkMax:3}),roles:!!s.roles});
+const CLSN={detective:'Detective',engineer:'Engineer',guardian:'Guardian',scientist:'Scientist',scout:'Scout',medic:'Medic'};
+const S={scr:'home',name:'',code:'',jc:new URLSearchParams(location.search).get('join')||'',peek:false,confirm:false,sel:null,err:'',cd:0,ready:false,acct:null,help:false,au:'',ap:'',inst:null};
+let G=null,hold=null,LT=null,ws=null,seq=0,retry=0,lastSig='',PEND={};
+const dev=matchMedia('(pointer:coarse)').matches?'Phone':'PC';
+const did=ld('did')||(()=>{const d=Math.random().toString(36).slice(2)+Date.now().toString(36);sv('did',d);return d})();
+S.name=ld('name')||'';
+function hud(){if(!G)return;const set=(id,v)=>{const e=$(id);if(e)e.textContent=v};set('#clk',fmt(G.left));set('#sc',G.sab?fmt(G.sab.left):'');
+  const b=$('#cb');if(b)b.style.width=(G.total?G.done/G.total*100:0)+'%';set('#cdn',G.sabCd>0?fmt(G.sabCd):'ready');set('#mcd',G.mcd>0?fmt(G.mcd):'');set('#abcd',G.ab&&G.ab.cd>0?fmt(G.ab.cd):'ready');set('#atcd',G.atk&&G.atk.cd>0?fmt(G.atk.cd):'ready');set('#dn',G.down?Math.max(0,Math.ceil(G.down.left)):'');const al=$('#al');if(al)al.style.width=G.alone+'%'}
+const send=m=>{m.aid=++seq+'-'+Date.now();if(ws&&ws.readyState===1)ws.send(JSON.stringify(m))};
+const raw=m=>{if(ws&&ws.readyState===1)ws.send(JSON.stringify(m))};
+function connect(then){
+  const q=new URLSearchParams(location.search).get('server');
+  ws=new WebSocket(q||((location.protocol==='https:'?'wss://':'ws://')+(location.host||'localhost:8080')));
+  ws.onopen=()=>{retry=0;if(ld('au')&&ld('as'))raw({t:'resume',user:ld('au'),sess:ld('as')});
+    if(then)then();else if(ld('token')&&ld('code'))send({t:'rejoin',code:ld('code'),token:ld('token'),did});else render()};
+  ws.onmessage=e=>apply(JSON.parse(e.data));
+  ws.onclose=()=>{if(ld('token')){S.err='Connection lost. Reconnecting...';render()}setTimeout(()=>connect(),Math.min(5000,1000*++retry))};
+}
+setInterval(()=>send({t:'ping'}),10000);
+let cerrN=0;const cerr=(msg,src)=>{if(cerrN++<3)raw({t:'cerr',msg:String(msg).slice(0,160),src:String(src||'').slice(0,60)})};
+addEventListener('error',e=>cerr(e.message,(e.filename||'').split('/').pop()+':'+e.lineno));addEventListener('unhandledrejection',e=>cerr(e.reason&&e.reason.message||e.reason,'promise'));
+const msgSig=a=>a.map(m=>m.id+(m.hid?'h':m.rep?'r':'')).join();
+const sig=v=>JSON.stringify([v.ph,v.host,v.set,v.cd,v.ready,v.P.map(p=>[p.id,p.alive,p.online,p.done]),v.mine.map(t=>t.done),!!v.sab,msgSig(v.msgs),msgSig(v.gmsgs),msgSig(v.tmsgs),v.muted,v.chatOff,v.canPair,
+  v.pairs.map(x=>x.a),v.mypair&&[v.mypair.partner,v.mypair.i],v.phase&&v.phase.k,v.log.length,v.pl.length,v.cleared.map(c=>c.ids.length),v.meet,v.mcd>0,v.sabCd>0,v.sabUsed,v.alone>=50,!!v.eject,!!v.end,v.notes.length,!!v.down,v.downs.map(d=>d.id),v.ab&&[v.ab.uses,v.ab.cd>0,v.ab.can,v.ab.seen.length],v.atk&&[v.atk.target&&v.atk.target.id,v.atk.cd>0,v.atk.used]]);
+function events(o,v){if(!o||o.code!==v.code)return;
+  if(v.ph!==o.ph){if(v.ph==='meeting'){SND.meet();buzz([120,60,120])}else if(v.ph==='eject')SND.eject();
+    else if(v.ph==='results'&&v.end){const me=v.P.find(p=>p.id===v.you),won=(v.end.w==='crew')===(me.role==='crew');won?SND.win():SND.lose();buzz(won?[80,40,80]:[220])}}
+  if(v.notes.length>o.notes.length&&v.notes.length){toast(v.notes[v.notes.length-1].txt);SND.msg();buzz(40)}
+  if(!o.down&&v.down){SND.alarm();buzz([200,100,200])}
+  if(v.downs.length>o.downs.length){SND.alarm();buzz([150,80,150,80,150])}
+  if(!o.sab&&v.sab){SND.alarm();buzz([200,100,200,100,400])}
+  const other=x=>[...x.msgs,...x.gmsgs,...x.tmsgs].filter(m=>!m.hid&&!m.mine).length;if(v.ph===o.ph&&other(v)>other(o))SND.msg()}
+function apply(m){
+  if(m.t==='err'){S.err=m.msg;if(m.fatal){sv('token');sv('code');G=null;S.scr='home'}else toast(m.msg);render();return}
+  if(m.t==='joined'){sv('token',m.token);sv('code',m.code);S.code=m.code;return}
+  if(m.t==='token'){sv('token',m.token);return}
+  if(m.t==='acct'){if(m.user){S.acct={user:m.user,stats:m.stats||{games:0,wins:0,tasks:0}};sv('au',m.user);if(m.sess)sv('as',m.sess);S.err='';S.ap=''}else{S.acct=null;sv('au');sv('as')}if(S.scr==='home')render();return}
+  if(m.t==='stats'){if(S.acct)S.acct.stats=m.stats;return}
+  if(m.t!=='state')return;
+  const v=m.v,was=G&&G.ph,s=sig(v),o=G;events(o,v);G=v;G.me=v.P.find(p=>p.id===v.you);S.code=v.code;S.cd=v.cd;S.ready=v.ready;
+  if(G.ph!==was){S.confirm=false;S.sel=null;LT=null;S.peek=false;hold=null;if(was==='lobby'||was==='reveal')PEND={}}
+  G.task=LT;
+  const map={lobby:'lobby',reveal:'reveal',play:G.me.alive?'play':'ghost',meeting:'meeting',eject:'eject',results:'results'},scr=map[G.ph];
+  if(scr!==S.scr||s!==lastSig||S.err){S.err='';S.scr=scr;lastSig=s;render()}else hud();
+}
+/* ============ TASK MINI-GAMES (the server enforces a minimum time for each) ============ */
+function initTask(i,t){const o={i,type:t.type,st:t.st,name:t.name,t0:performance.now(),msg:''};
+  if(o.type==='seq'){o.next=1;o.order=[1,2,3,4].sort(()=>Math.random()-.5)}
+  else if(o.type==='tap'){o.n=0}
+  else if(o.type==='slider'){o.target=15+rnd(71);o.val=50}
+  else if(o.type==='memory'||o.type==='code'){o.code=Array.from({length:4},()=>1+rnd(9)).join('');o.inp='';o.show=true;if(o.type==='memory')setTimeout(()=>{if(LT===o){o.show=false;render()}},2500)}
+  else if(o.type==='timing'){o.zc=.3+Math.random()*.4;o.zw=.2;o.pos=0}
+  else if(o.type==='wires'){const c=WIRES.slice().sort(()=>Math.random()-.5).slice(0,4);o.left=c;o.right=c.slice().sort(()=>Math.random()-.5);o.sel=-1;o.ok=[]}
+  else if(o.type==='sort'){const s=new Set();while(s.size<4)s.add(10+rnd(90));o.vals=[...s];o.sorted=[...s].sort((a,b)=>a-b);o.used=[]}
+  else if(o.type==='drag'){o.tg=.68+Math.random()*.22;o.pos=0}
+  else if(o.type==='scan'){o.hot=[...Array(12).keys()].sort(()=>Math.random()-.5).slice(0,5);o.got=[]}
+  return o}
+function fin(){const t=LT;if(!t)return;const w=Math.max(0,MINMS[t.type]+200-(performance.now()-t.t0));LT=null;G.task=null;PEND[t.i]=Date.now()+w+2500;
+  setTimeout(()=>send({t:'task_done',i:t.i}),w);buzz(70);SND.ok();render()}
+function tloop(){if(!LT||LT.type!=='timing')return;const mk=$('#mk');if(mk){LT.pos=(Math.sin((performance.now()-LT.t0)/420-1.5708)+1)/2;mk.style.left='calc('+LT.pos*100+'% - 3px)'}requestAnimationFrame(tloop)}
+const keypad=dis=>`<div class="keys">${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="btn sec" data-a="k${n}" ${dis?'disabled':''}>${n}</button>`).join('')}<button class="btn sec" data-a="kc" ${dis?'disabled':''}>Clear</button><button class="btn sec" data-a="k0" ${dis?'disabled':''}>0</button></div>`;
+function taskCard(t){const ty=t.type;let b='';
+  if(ty==='seq')b=`<div class="h" style="font-size:20px">Tap 1 to 4 in order</div><div class="row" style="flex-wrap:wrap">${t.order.map(n=>`<button class="btn sec" style="width:calc(50% - 5px)" data-a="n${n}">${n}</button>`).join('')}</div><div class="mut">Next number: ${t.next}</div>`;
+  else if(ty==='hold')b=`<div class="h" style="font-size:20px">Hold to stabilise</div><button class="btn" id="hb" data-hold="task">Hold for 2 seconds<i class="fill" id="hf"></i></button>`;
+  else if(ty==='tap')b=`<div class="h" style="font-size:20px">Tap 12 times to pump</div><div class="bar"><i style="width:${t.n/12*100}%"></i></div><button class="btn" data-a="tap">Tap (${t.n} of 12)</button>`;
+  else if(ty==='slider')b=`<div class="h" style="font-size:20px">Set the dial to <span class="amb mono">${t.target}</span></div><input type="range" id="sl" min="0" max="100" value="${t.val}" style="width:100%" aria-label="Dial"><div class="mono mut" id="sv">${t.val}</div><button class="btn" data-a="lock">Lock it in</button><div class="mut">${esc(t.msg)}</div>`;
+  else if(ty==='memory'||ty==='code')b=`<div class="h" style="font-size:20px">${ty==='memory'?'Remember the code':'Enter the code'}</div><div class="mono amb" style="font-size:34px;letter-spacing:.2em;text-align:center">${t.show?t.code.split('').join(' '):'- - - -'}</div><div class="mono" style="font-size:26px;text-align:center;min-height:34px">${t.inp.padEnd(4,'_').split('').join(' ')}</div>${keypad(ty==='memory'&&t.show)}`;
+  else if(ty==='timing')b=`<div class="h" style="font-size:20px">Stop the marker in the green zone</div><div id="tbar" style="position:relative;height:28px;border-radius:8px;background:#1E2740"><div style="position:absolute;top:0;bottom:0;left:${(t.zc-t.zw/2)*100}%;width:${t.zw*100}%;background:rgba(61,220,151,.45);border-radius:8px"></div><i id="mk" style="position:absolute;top:-3px;bottom:-3px;width:6px;background:var(--amb);border-radius:3px;left:0"></i></div><button class="btn" data-a="stop">Stop</button><div class="mut">${esc(t.msg)}</div>`;
+  else if(ty==='wires'){const bt=(side,arr)=>arr.map((c,k)=>`<button class="btn sec" data-a="${side}${k}" ${t.ok.includes(c)?'disabled':''} style="height:44px;border-color:${c[0]};${side==='wl'&&t.sel===k?'background:'+c[0]+'44':''}"><span style="color:${c[0]}">&#9679;</span> ${c[1]}</button>`).join('');
+    b=`<div class="h" style="font-size:20px">Match the wires</div><div class="mut">Tap a wire on the left, then its match on the right.</div><div class="row" style="align-items:flex-start"><div class="col grow" style="gap:8px">${bt('wl',t.left)}</div><div class="col grow" style="gap:8px">${bt('wr',t.right)}</div></div>`}
+  else if(ty==='sort')b=`<div class="h" style="font-size:20px">Tap lightest to heaviest</div><div class="row" style="flex-wrap:wrap">${t.vals.map((v,k)=>`<button class="btn sec" style="width:calc(50% - 5px)" data-a="s${k}" ${t.used.includes(k)?'disabled':''}>${v} kg</button>`).join('')}</div>`;
+  else if(ty==='drag')b=`<div class="h" style="font-size:20px">Drag the rod into the slot</div><div id="dtr" style="position:relative;height:52px;border-radius:12px;background:#1E2740;touch-action:none"><div style="position:absolute;top:6px;bottom:6px;left:${(t.tg-.08)*100}%;width:16%;border:2px dashed var(--ok);border-radius:8px"></div><div id="dh" style="position:absolute;top:4px;bottom:4px;width:44px;left:calc(${t.pos*100}% - 22px);background:var(--amb);border-radius:8px;cursor:grab"></div></div><div class="mut">${esc(t.msg)}</div>`;
+  else if(ty==='scan')b=`<div class="h" style="font-size:20px">Sweep the pointer over the glowing cells</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">${[...Array(12).keys()].map(k=>`<div class="cell ${t.hot.includes(k)?(t.got.includes(k)?'hot got':'hot'):''}" data-cell="${k}"></div>`).join('')}</div><div class="mut">${t.got.length} of 5 scanned</div>`;
+  return `<div class="card"><div class="mut">${esc(t.st)} station - ${esc(t.name)}</div>${b}</div>`}
+/* ============ RENDER ============ */
+const AUTHAS=()=>G&&G.host===G.you;
+const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+function installCard(){if(standalone())return '';
+  if(S.inst)return `<div class="card"><div class="row sp"><div><div class="h">Install the app</div><div class="mut" style="font-size:12px">Opens full screen from your home screen or desktop.</div></div><button class="tag" data-a="install">Install</button></div></div>`;
+  if(/iphone|ipad|ipod/i.test(navigator.userAgent))return `<div class="card"><div class="h">Install the app</div><div class="mut" style="font-size:12px">In Safari tap the Share button, then Add to Home Screen.</div></div>`;
+  return ''}
+function head(){return `<div class="row sp"><div class="row">${LOGO(34)}<div class="h amb" style="font-size:13px;letter-spacing:.18em;text-transform:uppercase">Traitor in the Room</div></div><span class="row" style="gap:8px"><button class="tag sm" data-a="snd" data-tip="Sound effects on or off" aria-label="Sound">Sound ${AUD.on?'on':'off'}</button><span class="mut">${S.code}</span></span></div>`}
+function msgHtml(m,ch){const hm=G.host===G.you&&(ch==='lobby'||ch==='meet');
+  if(m.hid)return `<div class="msg hid">${m.hb?'Message removed by the host':'Message hidden after reports'}</div>`;
+  return `<div class="msg ${m.mine?'me':''}"><div class="row sp"><span class="nm" style="color:${m.col}">${esc(m.name)}${m.mine?' (you)':''}</span><span class="row" style="gap:6px">${m.mine?'':`<button class="tag sm" data-mute="${m.pid}" data-tip="Hide this player's messages from you">Mute</button>${m.bot?'':`<button class="tag sm" data-rep="${m.id}" ${m.rep?'disabled':''} data-tip="Two reports hide a message for everyone">${m.rep?'Reported':'Report'}</button>`}`}${hm?`<button class="tag sm" data-hrm="${m.id}" data-tip="Host: remove this message for everyone">Remove</button>`:''}</span></div><div>${esc(m.txt)}</div></div>`}
+function chatBox(ch,title,msgs,can,chips,note,status){const showMu=ch==='lobby'||ch==='meet';
+  const muted=showMu?G.muted.map(id=>G.P.find(p=>p.id===id)).filter(Boolean).map(p=>`<button class="tag sm" data-mute="${p.id}">Unmute ${esc(p.name)}</button>`).join(''):'';
+  return `<div class="card"><div class="row sp"><div class="h">${title}</div><span class="mut" style="font-size:12px">${status||''}</span></div><div class="chat">${msgs.map(m=>msgHtml(m,ch)).join('')||'<div class="mut">No messages yet.</div>'}</div>
+  ${can?`<div class="row"><input type="text" data-ch="${ch}" maxlength="100" placeholder="Type a message" autocomplete="off" aria-label="${esc(title)} message"><button class="tag" data-a="say" data-ch="${ch}" style="height:42px">Send</button></div>`:''}
+  ${chips?`<div class="row" style="flex-wrap:wrap">${chips}</div>`:''}${note?`<div class="mut" style="font-size:12px">${note}</div>`:''}
+  ${muted?`<div class="row" style="flex-wrap:wrap"><span class="mut" style="font-size:12px">Muted:</span>${muted}</div>`:''}<div class="mut" style="font-size:12px">Links and phone numbers are hidden. Two reports hide a message.</div></div>`}
+function chatPanel(){const ph=G.phase,talk=ph&&ph.k==='talk',me=G.me,al=G.P.filter(p=>p.alive&&p!==me),can=talk&&me.alive&&!G.chatOff;
+  const chips=can?[`I was at ${me.st}`,'I saw nobody','I finished a task'].map(t=>`<button class="tag" data-say="${esc(t)}">${esc(t)}</button>`).join('')+al.map(p=>`<button class="tag" data-sus="${p.id}">Sus: ${esc(p.name)}</button>`).join(''):'';
+  const note=G.chatOff?'Chat is off for you for the rest of this match after reports.':!me.alive?'You are out, so you can read but not speak here.':can?'':'Chat opens again at the next discussion.';
+  return chatBox('meet','Meeting chat',G.msgs,can,chips,note,talk?'open':'closed for voting')+(!me.alive?chatBox('ghost','Ghost chat',G.gmsgs,!G.chatOff,'','Only players who are out can see this.',''):'')}
+function ghostChat(){return chatBox('ghost','Ghost chat',G.gmsgs,!G.chatOff,'','Only players who are out can see this.','')}
+function traitorChat(){return chatBox('traitor','Traitor channel',G.tmsgs,!G.chatOff&&G.ph==='play','','Only traitors can see this. Open during play.','private')}
+function taskRows(ghost){return G.mine.map((t,i)=>{const pend=(PEND[i]||0)>Date.now()&&!t.done;
+  const btns=t.done?'<span class="pill" style="color:var(--ok)">Done</span>':pend?'<span class="mut">Finishing...</span>':`<span class="row" style="gap:6px"><button class="tag" data-a="t${i}" data-tip="Alone: quick, but nobody can vouch for you.${dev==='PC'&&!ghost?' Key: '+(i+1):''}">Alone</button>${ghost?'':`<button class="tag" data-a="p${i}" ${G.canPair?'':'disabled'} data-tip="With a partner: both hold for 3 seconds. Slower, but the timeline records a verified link.${dev==='PC'?' Key: Shift+'+(i+1):''}">With partner</button>`}</span>`;
+  return `<div class="row sp" style="min-height:52px;border-bottom:1px solid #1E2740"><div class="grow"><div>${esc(t.name)}</div><div class="mut" style="font-size:12px">${t.st} - ${TYPEN[t.type]}</div></div>${btns}</div>`}).join('')}
+function logCard(){return `<div class="card"><div class="h">Timeline</div><div class="log">${G.log.map(l=>`<div><span class="mono mut">${fmt(G.R.match-l.t)}</span> ${l.txt}</div>`).join('')||'<div class="mut">Nothing happened yet.</div>'}</div></div>`}
+function keysCard(){return `<div class="card"><div class="h">Keyboard</div><div class="mut kb" style="font-size:12px">1 2 3: start a task alone<br>Shift + 1 2 3: start with a partner<br>J: join a partner request<br>Space: hold (task, pair, fix) or tap<br>Digits: tasks with numbers, Backspace clears<br>M: call meeting, Y confirm, N cancel<br>S: sabotage, A: attack (traitor)<br>C: jump to a chat box, Enter sends<br>Meeting: 1-9 vote for a player, 0 skip<br>Esc: back or cancel. ?: show or hide this list</div></div>`}
+function notebook(share){if(!G.notes.length)return '';const can=share&&G.phase&&G.phase.k==='talk'&&G.me.alive&&!G.chatOff;
+  return `<div class="card"><div class="h">Notebook</div><div class="log" style="max-height:170px">${G.notes.map((n,i)=>`<div><span class="mono mut">${fmt(n.t)}</span> ${esc(n.txt)}${can?` <button class="tag sm" data-share="${i}" data-tip="Post this note in the meeting chat">Share</button>`:''}</div>`).join('')}</div><div class="mut" style="font-size:12px">Only you can see this.${share&&!can?' You can share notes while discussion is open.':''}</div></div>`}
+function downCard(){return `<div class="alert" role="alert"><svg width="34" height="34" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="#FF5C6C" stroke-width="2"/><path d="M12 7v6M12 16v1" stroke="#FF5C6C" stroke-width="2"/></svg><div class="grow"><div class="h" style="color:var(--bad);font-size:18px">You were attacked</div><div class="mut">A medic may still save you. Time left: <span class="mono" id="dn"></span> s. You cannot act until then.</div></div></div>`}
+function abilityCard(){const a=G.ab;if(!a||!G.me.alive)return '';const cd=a.cd>0,out=a.uses===0,others=G.P.filter(p=>p.alive&&p.id!==G.you),dis=cd||out;
+  const left=a.uses>0?a.uses+' use'+(a.uses>1?'s':'')+' left':a.uses<0?'unlimited':'no uses left';
+  const pick=(label,list)=>list.map(p=>`<div class="row sp" style="min-height:38px"><span class="row">${AV(p)}${esc(p.name)}${p.id===G.you?' (you)':''}</span><button class="tag" data-ab="${p.id}" ${dis||(a.cls==='detective'&&a.seen.includes(p.id))?'disabled':''}>${a.cls==='detective'&&a.seen.includes(p.id)?'Read':label}</button></div>`).join('');
+  let body='';
+  if(a.cls==='detective')body=pick('Investigate',others);
+  else if(a.cls==='scout')body=pick('Track',others);
+  else if(a.cls==='guardian')body=pick('Shield',[G.me,...others]);
+  else if(a.cls==='scientist')body=`<button class="btn" data-ab="x" ${dis||!a.can?'disabled':''} data-tip="Works during a sabotage or for 45 seconds after it. Once per sabotage.">Analyze last sabotage</button>`;
+  else if(a.cls==='engineer')body=`<button class="btn" data-ab="x" ${dis?'disabled':''} data-tip="Shows how many people are at each station right now">Open maintenance panel</button><div class="mut" style="font-size:12px">You also repair the reactor faster.</div>`;
+  else if(a.cls==='medic')body=G.downs.length?G.downs.map((d,i)=>`<button class="btn bad" ${i?'':'id="hb"'} data-hold="save" data-id="${d.id}" ${dis&&0?'disabled':''}>Hold to save ${esc(d.name)} (${esc(d.st)}, ${Math.max(0,Math.ceil(d.left))}s)${i?'':'<i class="fill" id="hf"></i>'}</button>`).join(''):'<div class="mut">No one needs saving. You will be alerted if a player is attacked.</div>';
+  return `<div class="card"><div class="row sp"><div class="h">${esc(a.name)}</div><span class="mut">${left}${a.cls==='medic'||a.cls==='guardian'||a.cls==='scientist'?'':' - <span id="abcd"></span>'}</span></div><div class="mut" style="font-size:12px">${esc(a.desc)}</div>${body}</div>`}
+function attackCard(){const a=G.atk;if(!a||!G.me.alive)return '';const off=a.cd>0||a.used>=a.max;
+  return `<div class="card"><div class="row sp"><div class="h" style="color:var(--bad)">Attack</div><span class="mut">${a.used} of ${a.max} used</span></div><div class="mut" style="font-size:12px">You must be alone with exactly one crew member. They are downed, and a medic may save them. A shield blocks it. Cooldown: <span id="atcd"></span></div><button class="btn bad" data-atk="${a.target?a.target.id:''}" ${off||!a.target?'disabled':''} data-tip="${dev==='PC'?'Key: A':''}">${a.target?'Attack '+esc(a.target.name):'No lone target here'}</button></div>`}
+const V={
+lobby(){const set=G.set,n=G.P.length,tc=traitorsFor(n),min=set.quick?3:5,ok=n>=min,host=G.host===G.you,rev=set.reveal==null?tc===1:set.reveal,crew=n-tc,R=rulesFor(set);
+  const rows=G.P.map(p=>`<div class="row" style="height:44px;border-bottom:1px solid #1E2740">${AV(p)}<div class="grow"><div>${esc(p.name)}${p.id===G.you?' (you)':''}</div><div class="mut" style="font-size:12px">${p.bot?'Bot':p.dev}${p.online?'':' - offline'}</div></div>${p.id===G.host?'<span class="pill">Host</span>':''}${host&&p.bot?`<button class="tag" data-a="rm${p.id}">Remove</button>`:''}${host&&!p.bot&&p.id!==G.you?`<button class="tag" data-a="kick${p.id}" data-tip="Remove this player from the room">Remove</button>`:''}</div>`).join('');
+  const T=(a,on,txt,tip)=>host?`<button class="tag ${on?'on':''}" data-a="${a}" data-tip="${tip||''}">${txt}</button>`:`<span class="tag ${on?'on':''}" data-tip="${tip||''}">${txt}</span>`;
+  const mx=host?`<span class="row" style="gap:4px"><button class="tag" data-a="mxm" ${set.max<=Math.max(n,set.quick?3:5)?'disabled':''} aria-label="Fewer players">-</button><span class="tag">Max ${set.max}</span><button class="tag" data-a="mxp" ${set.max>=8?'disabled':''} aria-label="More players">+</button></span>`:`<span class="tag">Max ${set.max}</span>`;
+  return head()+`<div class="card"><div class="mut" style="letter-spacing:.14em;text-transform:uppercase;font-size:12px">Room code</div><div class="mono amb" style="font-size:52px;font-weight:600;letter-spacing:.16em;line-height:1">${G.code}</div><div class="row"><div class="mut grow">Friends type this code on phone or PC.</div><button class="tag" data-a="copy">Copy link</button></div></div>
+  <div class="row sp"><div class="h" style="font-size:16px">Players</div><span class="mono mut">${n} of ${set.max}</span></div><div class="card" style="padding:2px 14px">${rows}</div>
+  <div class="row" style="flex-wrap:wrap"><span class="tag">${fmt(R.match)} match</span><span class="tag">${R.meet} meetings</span><span class="tag">${tc} traitor${tc>1?'s':''}</span><span class="tag">${crew*TASKS} shared tasks</span><span class="tag">${R.sabMax} sabotages</span>${set.roles?`<span class="tag">${R.atkMax} attacks</span>`:''}</div>
+  <div class="row" style="flex-wrap:wrap">${T('cl',set.classic,'Classic mode '+(set.classic?'on':'off'),set.classic?'Standard rules: 4:00 match, 2 meetings, 3 sabotages. Turn off for fast and loud: 3:00, 3 meetings, 4 sabotages, shorter cooldowns.':'Fast and loud: 3:00 match, 3 meetings, 4 sabotages, shorter cooldowns. Turn on for standard rules.')}${T('rv',rev,'Reveal on ejection '+(rev?'on':'off'),'Show the role of an ejected player')}${T('rl',set.roles,'Special roles '+(set.roles?'on':'off'),'Crew get roles: Detective, Engineer, Guardian, Scientist, Scout, Medic. Traitors can also attack. Off = plain crew, sabotage only.')}${T('qk',set.quick,'Quick mode (3+)','Allow starting with only 3 players')}${mx}${host?'<button class="tag" data-a="bot">+ Add bot</button>':''}</div>
+  ${S.err?`<div class="alert" role="alert">${esc(S.err)}</div>`:''}
+  ${chatBox('lobby','Lobby chat',G.msgs,!G.chatOff,'','','')}
+  <div style="margin-top:auto" class="card">${host?`<button class="btn" data-a="start" ${ok?'':'disabled'}>Start match</button><div class="mut" style="text-align:center">${ok?'You are the host.':'Need at least '+min+' players to start.'}</div>`:'<div class="mut" style="text-align:center">Waiting for the host to start...</div>'}<button class="btn sec" data-a="leave">Leave room</button></div>`},
+home(){const a=S.acct,acct=a?`<div class="card"><div class="row sp"><div><div class="h">${esc(a.user)}</div><div class="mut" style="font-size:12px">${a.stats.games} games - ${a.stats.wins} wins - ${a.stats.tasks} tasks</div></div><button class="tag" data-a="logout">Sign out</button></div></div>`
+  :`<div class="card"><div class="h">Account (optional)</div><div class="mut" style="font-size:12px">Guests can play too. An account keeps your stats. Use HTTPS when you play online.</div><input type="text" id="au" maxlength="16" placeholder="Account name" autocomplete="username" value="${esc(S.au)}" aria-label="Account name"><input type="password" id="ap" maxlength="64" placeholder="Password (8+ characters)" autocomplete="current-password" aria-label="Password"><div class="row"><button class="btn sec" data-a="login" style="height:44px">Sign in</button><button class="btn sec" data-a="register" style="height:44px">Create account</button></div></div>`;
+  return head()+`<div class="card" style="align-items:center;text-align:center;padding:26px 16px">${LOGO(88)}<div class="h amb" style="font-size:24px">Traitor in the Room</div><div class="mut">Find the traitor before the reactor fails.</div></div>
+  <input type="text" id="nm" maxlength="12" placeholder="Your name" value="${esc(S.name)}" aria-label="Your name">
+  <button class="btn" data-a="create">Create room</button>
+  <div class="row"><input type="text" id="jc" maxlength="4" placeholder="CODE" value="${esc(S.jc)}" aria-label="Room code" style="text-transform:uppercase;letter-spacing:.2em"><button class="btn sec" style="width:120px" data-a="join">Join</button></div>
+  ${S.err?`<div class="alert" role="alert">${esc(S.err)}</div>`:''}${acct}${installCard()}`},
+reveal(){const me=G.me,t=me.role==='traitor',partner=t?G.P.filter(p=>p.role==='traitor'&&p!==me).map(p=>p.name).join(', '):'';
+  return head()+`<div class="card" style="align-items:center;text-align:center;padding:28px 16px;min-height:300px;justify-content:center;border-color:${S.peek?(t?'#FF5C6C':'#3DDC97'):'var(--line)'}">
+  ${S.peek?`<div class="h" style="font-size:38px;color:${t?'var(--bad)':'var(--ok)'}">${t?'TRAITOR':'CREW'}</div><div>${t?'Blend in. Sabotage the reactor. Do not get voted out.':'Finish your tasks. Find the traitor.'}</div>${G.ab?`<div class="pill">${esc(G.ab.name)}</div><div class="mut">${esc(G.ab.desc)}</div>`:''}${t&&G.atk?`<div class="mut">You can also attack a crew member who is alone with you.</div>`:''}${partner?`<div class="pill">Your partner: ${esc(partner)}</div>`:''}`:`<div class="h" style="font-size:22px">Your role is hidden</div><div class="mut">Hold the button to peek. It hides if you switch tabs.</div>`}</div>
+  <button class="btn sec" id="peek">Hold to reveal</button>
+  ${S.cd?`<div class="h amb" style="text-align:center;font-size:30px">Starting in ${S.cd}</div>`:`<button class="btn" data-a="seen" ${S.ready?'disabled':''}>${S.ready?'Waiting for others...':'I’ve seen it'}</button>`}`},
+play(){const me=G.me,tr=me.role==='traitor',left=G.mcd>0;
+  if(G.down)return head()+downCard()+notebook(false)+logCard();
+  if(G.task)return head()+taskCard(G.task)+`<button class="btn sec" data-a="back">Back</button>`;
+  if(G.mypair){const mp=G.mypair,who=esc(mp.mine?mp.partner:mp.a);return head()+`<div class="card"><div class="mut">${esc(mp.st)} station - ${esc(mp.task)} - with a partner</div>${mp.partner?`<div class="h" style="font-size:20px">${mp.mine?'Hold together with ':'Helping '}${who}</div><div class="mut">Both of you hold at the same time for 3 seconds.</div><button class="btn" id="hb" data-hold="pair">Hold for 3 seconds<i class="fill" id="hf"></i></button>`:`<div class="h" style="font-size:20px">Waiting for a partner...</div><div class="mut">Other players can join from their screen. The request ends after 25 seconds.</div>`}</div><button class="btn sec" data-a="pcancel">${mp.mine?'Cancel request':'Leave pair task'}</button>`}
+  const reqs=G.pairs.length?`<div class="card"><div class="h">Partner requests</div>${G.pairs.map(x=>`<div class="row sp" style="min-height:44px"><div><div>${esc(x.name)}</div><div class="mut" style="font-size:12px">${esc(x.task)} at ${x.st}</div></div><button class="tag" data-a="pj${x.a}" data-tip="Walk over and help. You earn an MVP point.${dev==='PC'?' Key: J':''}">Join</button></div>`).join('')}<div class="mut" style="font-size:12px">Working together shows up in the match timeline.</div></div>`:'';
+  const sab=G.sab?`<div class="alert" role="alert"><svg width="34" height="34" viewBox="0 0 24 24"><path d="M12 2L23 21H1Z" fill="none" stroke="#FF5C6C" stroke-width="2"/><path d="M12 9v5M12 17v1" stroke="#FF5C6C" stroke-width="2"/></svg><div class="grow"><div class="h" style="color:var(--bad);font-size:17px">Reactor unsafe</div><div class="mut">Fix it before <span class="mono" id="sc"></span> or the traitors win.</div></div></div>${tr?'':`<button class="btn bad" id="hb" data-hold="fix">Hold to fix reactor<i class="fill" id="hf"></i></button>`}`:'';
+  const mine=G.mine.filter(t=>t.done).length;
+  return head()+`<div class="row sp"><div class="h" style="font-size:26px" id="clk"></div><span class="pill" data-tip="${tr?'Sabotage, blend in, avoid the vote':'Finish tasks and find the traitor'}">${tr?'Traitor':'Crew'}${G.ab?' - '+esc(G.ab.name):''}</span></div>
+  <div class="card"><div class="row sp"><span class="mut">Crew progress</span><span class="mut">${G.done} of ${G.total}</span></div><div class="bar"><i id="cb"></i></div></div>${sab}
+  <div class="card"><div class="row sp"><div class="h">Your tasks</div><span class="mut">${mine} of ${TASKS}${tr?'':' done'}</span></div>${taskRows(false)}${tr?'<div class="mut" style="font-size:12px">Each task you finish also trims 8 seconds off your sabotage cooldown.</div>':''}</div>${reqs}
+  ${tr?`<div class="card"><div class="row sp"><div class="h" style="color:var(--bad)">Sabotage</div><span class="mut">${G.sabUsed} of ${G.R.sabMax} used</span></div><div class="mut">Alone time</div><div class="bar"><i id="al" style="background:var(--amb)"></i></div><button class="btn bad" data-a="sab" data-tip="Needs you alone at your station and no pair task running.${dev==='PC'?' Key: S':''}" ${G.sab||G.sabCd>0||G.sabUsed>=G.R.sabMax||G.alone<50?'disabled':''}>Sabotage reactor</button><div class="mut">Cooldown: <span id="cdn"></span>. Needs you alone at your station.</div></div>`:''}
+  ${abilityCard()}${attackCard()}${notebook(false)}
+  ${S.confirm?`<div class="card"><div>Call a meeting? ${G.meet} left.</div><div class="row"><button class="btn sec" data-a="no">Cancel</button><button class="btn bad" data-a="meet">Call it</button></div></div>`:`<button class="btn sec" data-a="ask" data-tip="${dev==='PC'?'Key: M':'Call everyone to discuss'}" ${G.meet<1||left?'disabled':''}>Call meeting (${G.meet} left) <span id="mcd" class="mono"></span></button>`}
+  ${!W&&tr?traitorChat():''}${!W&&dev==='PC'&&S.help?keysCard():''}`},
+ghost(){if(G.task)return head()+taskCard(G.task)+`<button class="btn sec" data-a="back">Back</button>`;
+  const crew=G.me.role==='crew',mine=G.mine.filter(t=>t.done).length;
+  return head()+`<div class="card"><div class="h" style="font-size:22px">You are out</div><div class="mut">${crew?'You can still finish your own tasks as a ghost. They count for the crew.':'Watch only. Crew progress and the match clock keep running.'}</div></div>
+  <div class="row sp"><div class="h" style="font-size:26px" id="clk"></div><span class="mut">${G.done} of ${G.total} tasks</span></div><div class="bar"><i id="cb"></i></div>
+  ${crew?`<div class="card"><div class="row sp"><div class="h">Your tasks</div><span class="mut">${mine} of ${TASKS} done</span></div>${taskRows(true)}</div>`:''}${W?'':ghostChat()}${!W&&dev==='PC'&&S.help?keysCard():''}${notebook(false)}${logCard()}`},
+meeting(){const ph=G.phase,al=G.P.filter(p=>p.alive&&p!==G.me),nm=id=>{const p=G.P.find(x=>x.id===id);return p?esc(p.name):'?'};
+  const trail=G.P.filter(p=>p.alive).map(p=>`<div class="mut" style="font-size:12px">${esc(p.name)}: ${p.trail.slice(-3).map(x=>x.st).join(' > ')}</div>`).join('');
+  const prs=G.pl.length?G.pl.map(x=>`<div style="font-size:13px"><span class="mono mut">${fmt(x.t)}</span> ${nm(x.a)} + ${nm(x.b)} at ${x.st}</div>`).join(''):'<div class="mut" style="font-size:13px">No verified pairs yet.</div>';
+  const clr=G.cleared.length?G.cleared.map(c=>`<div style="font-size:13px"><span class="mono mut">${fmt(c.t)}</span> Reactor alarm: ${c.ids.length?c.ids.map(nm).join(', ')+' <span class="pill" style="color:var(--ok)">cleared</span>':'<span class="mut">no one is cleared</span>'}</div>`).join(''):'<div class="mut" style="font-size:13px">No sabotage so far.</div>';
+  const all=id=>G.cleared.length>0&&G.cleared.every(c=>c.ids.includes(id));
+  const vote=ph.k==='vote'?`<div class="card"><div class="mut">Ties and skip mean no ejection. You can change your vote until time ends.</div>${al.map((p,i)=>`<button class="vote ${S.sel===p.id?'on':''}" data-v="${p.id}" data-tip="${dev==='PC'?'Key: '+(i+1):''}">${AV(p)}<span class="grow">${esc(p.name)}</span>${all(p.id)?'<span class="pill" style="color:var(--ok)">cleared</span>':''}</button>`).join('')}<button class="vote ${S.sel==='skip'?'on':''}" data-v="skip" data-tip="${dev==='PC'?'Key: 0':''}">Skip vote</button></div>`:(W?`<div class="card"><div class="mut">Discussion is open. Use the chat on the right.</div></div>`:'');
+  return head()+`<div class="row sp"><div class="h" style="font-size:20px">Meeting: ${ph.k==='talk'?'discuss':'vote'}</div><span class="mono amb" id="mt">${fmt(ph.left)}</span></div>
+  <div class="card"><div class="h">Station trail</div>${trail}</div>
+  <div class="card"><div class="h">Verified pairs</div>${prs}<div class="h" style="margin-top:6px">Cleared suspects</div>${clr}<div class="mut" style="font-size:12px">A sabotage needs the traitor alone. Anyone verified in a pair at that moment is cleared for that alarm only.</div></div>${notebook(true)}${vote}${W?'':chatPanel()}`},
+eject(){const e=G.eject,rev=e.reveal;return head()+`<div class="card ej"><div class="stars"></div>${e.out?`<div class="flyer">${AV(e.out)}</div>`:''}<div class="ejt ${e.out?'':'now'}"><div class="mut">Votes counted</div>${e.out?`${AV(e.out)}<div class="h" style="font-size:26px">${esc(e.out.name)} was ejected</div><div class="${rev&&e.out.role==='traitor'?'amb':'mut'}" style="font-size:17px">${rev?(e.out.role==='traitor'?'They were a traitor.':'They were not a traitor.'):'Role stays hidden.'}</div>`:`<div class="h" style="font-size:26px">No one was ejected</div><div class="mut">Tie or skip won.</div>`}</div></div>`},
+results(){const e=G.end,won=(e.w==='crew')===(G.me.role==='crew'),mvp=G.P.find(p=>p.id===e.mvp)||G.P[0];
+  return head()+`<div class="card" style="text-align:center"><div class="h" style="font-size:32px;color:${e.w==='crew'?'var(--ok)':'var(--bad)'}">${e.w==='crew'?'CREW WINS':'TRAITORS WIN'}</div><div>${e.why}</div><div class="mut">${won?'You won this match.':'You lost this match.'}</div></div>
+  <div class="card"><div class="h">All roles</div>${G.P.map(p=>`<div class="row">${AV(p)}<div class="grow">${esc(p.name)}</div><span class="pill" style="${p.role==='traitor'?'color:var(--bad);background:rgba(255,92,108,.14)':''}">${p.role}${p.cls?' - '+CLSN[p.cls]:''}</span></div>`).join('')}</div>
+  <div class="card"><div class="h">MVP: ${esc(mvp.name)}</div><div class="mut">Score = tasks done x 2, plus correct votes x 3, plus 1 for each pair task you helped with.</div></div>
+  ${logCard()}<button class="btn sec" data-a="share" data-tip="Share the result and timeline">Share report</button>${G.host===G.you?`<button class="btn" data-a="again">Play again</button>`:`<div class="mut" style="text-align:center">Waiting for the host to restart...</div>`}`}};
+function roster(){const rows=G.P.map(p=>{const st=!p.alive?'Out':(!p.online&&!p.bot)?'Offline':'In play',mu=G.muted.includes(p.id);
+  return `<div class="row" style="min-height:46px;border-bottom:1px solid #1E2740" data-tip="${esc(p.name)}: ${p.bot?'bot':p.dev}, ${st.toLowerCase()}">${AV(p)}<div class="grow"><div>${esc(p.name)}${p.id===G.you?' (you)':''}</div><div class="mut" style="font-size:12px">${p.bot?'Bot':p.dev} - ${st}</div></div>${p.id!==G.you&&!p.bot?`<button class="tag sm" data-mute="${p.id}">${mu?'Unmute':'Mute'}</button>`:''}</div>`}).join('');
+  return `<div class="card" style="padding:4px 14px"><div class="h" style="padding:10px 0 4px">Players</div>${rows}</div><div class="card"><div class="row sp"><span class="mut">Crew progress</span><span class="mut">${G.done} of ${G.total}</span></div><div class="bar"><i id="cb"></i></div><div class="mut" style="font-size:12px">Meetings left: ${G.meet}</div></div>`}
+function sidePanel(){const tr=G.me.role==='traitor';return logCard()+(G.ph==='play'&&tr?traitorChat():'')+(!G.me.alive?ghostChat():'')+(dev==='PC'?keysCard():'')+(G.ph==='play'&&!tr&&G.me.alive?`<div class="card"><div class="mut" style="font-size:13px">Chat opens during meetings, with Mute and Report on every message. Pick Alone or With partner for each task.</div></div>`:'')}
+function render(){const n=$('#nm'),j=$('#jc'),au=$('#au'),ap=$('#ap');if(n)S.name=n.value;if(j)S.jc=j.value.toUpperCase();if(au)S.au=au.value;if(ap)S.ap=ap.value;
+  const keep={};document.querySelectorAll('input[data-ch]').forEach(i=>{keep[i.dataset.ch]={v:i.value,f:document.activeElement===i,s:i.selectionStart}});
+  const app=$('#app'),scr=S.scr;W=!!G&&innerWidth>=1000&&['play','ghost','meeting','eject'].includes(scr);
+  app.className=W?'wide':(innerWidth>=1000&&['results','lobby'].includes(scr)?'mid':'');
+  app.innerHTML=W?`<div class="col side">${roster()}</div><div class="col">${V[scr]()}</div><div class="col side">${scr==='meeting'?chatPanel()+(dev==='PC'?keysCard():''):sidePanel()}</div>`:V[scr]();
+  Object.keys(keep).forEach(ch=>{const c=document.querySelector(`input[data-ch="${ch}"]`);if(c){c.value=keep[ch].v;if(keep[ch].f){c.focus();try{c.setSelectionRange(keep[ch].s,keep[ch].s)}catch(e){}}}});
+  document.querySelectorAll('.chat').forEach(c=>c.scrollTop=c.scrollHeight);
+  if(LT&&LT.type==='timing'&&!LT.loop){LT.loop=1;tloop()}hud()}
+let rz=0;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(render,150)});
+function sayNow(ch){const c=document.querySelector(`input[data-ch="${ch}"]`);if(!c)return;const t=c.value.trim();if(t){send({t:'say',txt:t,ch});c.value=''}}
+function reportText(){const e=G.end,mvp=G.P.find(p=>p.id===e.mvp)||G.P[0];
+  return `Traitor in the Room (room ${G.code})\n${e.w==='crew'?'CREW WINS':'TRAITORS WIN'}: ${e.why}\nMVP: ${mvp.name}\nRoles: ${G.P.map(p=>p.name+' ('+p.role+')').join(', ')}\nTimeline:\n${G.log.slice(-12).map(l=>fmt(G.R.match-l.t)+' '+l.txt).join('\n')}`}
+async function share(){const text=reportText();try{if(navigator.share){await navigator.share({title:'Traitor in the Room',text});return}}catch(e){if(e&&e.name==='AbortError')return}
+  try{await navigator.clipboard.writeText(text);toast('Report copied to the clipboard')}catch(e){toast('Could not copy the report')}}
+/* ============ EVENTS ============ */
+function startHold(b){if(hold||!b)return;const k=b.dataset.hold;hold={k,t0:performance.now(),ms:k==='pair'?3000:k==='save'?1200:k==='fix'&&G.ab&&G.ab.cls==='engineer'?900:2000,id:+b.dataset.id};if(k==='fix')send({t:'fix_start'});else if(k==='pair')send({t:'pair_hold'});else if(k==='save')send({t:'medic_start',id:hold.id})}
+function endHold(){if(hold){hold=null;const f=$('#hf');if(f)f.style.width='0'}}
+function holdDone(){const h=hold;hold=null;if(h.k==='save'){send({t:'save',id:h.id});const f=$('#hf');if(f)f.style.width='0'}else if(h.k==='fix')send({t:'fix'});else if(h.k==='pair'){send({t:'pair_done'});const f=$('#hf');if(f)f.style.width='0'}else if(LT)fin()}
+function scanCell(k,el){const t=LT;if(!t||t.type!=='scan'||!t.hot.includes(k)||t.got.includes(k))return;t.got.push(k);el.classList.add('got');buzz(15);if(t.got.length>=5)fin();else render()}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset,a=d.a;
+  if(d.say){send({t:'say',txt:d.say,ch:'meet'});return}
+  if(d.ab!==undefined){send({t:'ab',id:d.ab==='x'?undefined:+d.ab});return}
+  if(d.atk!==undefined){if(d.atk!=='')send({t:'attack',id:+d.atk});return}
+  if(d.share!==undefined){const n=G.notes[+d.share];if(n)send({t:'say',txt:n.txt.slice(0,100),ch:'meet'});return}
+  if(d.mute){send({t:'mute',id:+d.mute});return}
+  if(d.rep){send({t:'report',mid:+d.rep});return}
+  if(d.hrm){send({t:'hrm',mid:+d.hrm});return}
+  if(d.sus){const t=G.P.find(p=>p.id==d.sus);send({t:'say',txt:'I suspect '+(t?t.name:'someone'),sus:+d.sus,ch:'meet'});return}
+  if(d.v){S.sel=d.v==='skip'?'skip':+d.v;send({t:'vote',v:S.sel});render();return}
+  if(!a)return;
+  if(a==='install'){const e=S.inst;if(!e)return;S.inst=null;e.prompt();e.userChoice.finally(()=>render());render();return}
+  if(a==='snd'){AUD.on=!AUD.on;sv('snd',AUD.on?'1':'0');if(AUD.on)SND.ok();render();return}
+  if(a==='create'||a==='join'){const nm=$('#nm'),jc=$('#jc');S.name=((nm&&nm.value)||'').trim()||(S.acct?S.acct.user:'Player');sv('name',S.name);const code=((jc&&jc.value)||'').toUpperCase().trim();
+    if(a==='join'&&code.length!==4){S.err='Enter the 4-letter room code.';render();return}
+    const go=()=>send(a==='create'?{t:'create',name:S.name,dev,did}:{t:'join',code,name:S.name,dev,did});
+    ws&&ws.readyState===1?go():connect(go);return}
+  if(a==='login'||a==='register'){const u=$('#au'),p=$('#ap');if(!u||!p)return;S.au=u.value;const go=()=>raw({t:a,user:u.value,pass:p.value});ws&&ws.readyState===1?go():connect(go);p.value='';S.ap='';return}
+  if(a==='logout'){raw({t:'logout',sess:ld('as')});S.acct=null;sv('au');sv('as');render();return}
+  const M={cl:1,qk:1,rv:1,rl:1};
+  if(M[a]){const s=G.set,r0=s.reveal==null?traitorsFor(G.P.length)===1:s.reveal;send({t:'settings',classic:a==='cl'?!s.classic:s.classic,quick:a==='qk'?!s.quick:s.quick,reveal:a==='rv'?!r0:s.reveal,roles:a==='rl'?!s.roles:s.roles});return}
+  if(a==='mxm'||a==='mxp'){send({t:'settings',max:G.set.max+(a==='mxp'?1:-1)});return}
+  if(a==='bot'){send({t:'addbot'});return}
+  if(a==='say'){sayNow(d.ch);return}
+  if(a==='share'){share();return}
+  if(a==='pcancel'){send({t:'pair_cancel'});return}
+  if(/^pj\d$/.test(a)){send({t:'pair_join',a:+a[2]});return}
+  if(a==='start'||a==='again'){send({t:a});return}
+  if(a==='leave'){send({t:'leave'});sv('token');sv('code');G=null;S.scr='home';S.err='';render();return}
+  if(/^rm\d$/.test(a)){send({t:'rmbot',id:+a[2]});return}
+  if(/^kick\d$/.test(a)){const p=G.P.find(x=>x.id===+a[4]);if(p&&confirm('Remove '+p.name+' from the room?'))send({t:'kick',id:p.id});return}
+  if(a==='copy'){try{navigator.clipboard.writeText(location.origin+'/?join='+G.code);toast('Link copied')}catch(x){}return}
+  if(a==='seen'){send({t:'seen'});return}
+  if(a==='ask'){S.confirm=true}else if(a==='no'){S.confirm=false}else if(a==='meet'){send({t:'meet'});S.confirm=false}
+  else if(a==='sab'){send({t:'sab'});return}
+  else if(a==='back'){LT=null;G.task=null}
+  else if(/^t\d$/.test(a)){const i=+a[1],t0=G.mine[i];if(!t0||t0.done)return;send({t:'task_start',i});LT=initTask(i,t0);G.task=LT}
+  else if(/^p\d$/.test(a)){send({t:'pair_start',i:+a[1]});return}
+  else if(a==='tap'&&LT){LT.n++;buzz(10);if(LT.n>=12){fin();return}}
+  else if(a==='lock'&&LT){if(Math.abs(LT.val-LT.target)<=3){fin();return}LT.msg='Off target. Nudge it closer.';buzz([60,40,60])}
+  else if(a==='stop'&&LT){if(Math.abs(LT.pos-LT.zc)<=LT.zw/2){fin();return}LT.msg='Missed. Try again.';buzz([60,40,60])}
+  else if(/^n\d$/.test(a)&&LT){const t=LT;if(+a[1]===t.next){t.next++;buzz(25);if(t.next>4){fin();return}}else{t.next=1;buzz([60,40,60])}}
+  else if(/^k\d$/.test(a)&&LT){const t=LT;if(t.inp.length<4)t.inp+=a[1];if(t.inp.length===4){if(t.inp===t.code){fin();return}t.inp='';buzz([60,40,60]);if(t.type==='memory'){t.show=true;setTimeout(()=>{if(LT===t){t.show=false;render()}},2000)}}}
+  else if(a==='kc'&&LT){LT.inp=''}
+  else if(/^wl\d$/.test(a)&&LT){const t=LT;if(!t.ok.includes(t.left[+a[2]]))t.sel=+a[2]}
+  else if(/^wr\d$/.test(a)&&LT){const t=LT;if(t.sel<0)return;const c=t.right[+a[2]];if(t.left[t.sel]===c){t.ok.push(c);t.sel=-1;buzz(25);if(t.ok.length===4){fin();return}}else{buzz([60,40,60]);t.sel=-1}}
+  else if(/^s\d$/.test(a)&&LT){const t=LT,k=+a[1];if(t.vals[k]===t.sorted[t.used.length]){t.used.push(k);buzz(25);if(t.used.length===4){fin();return}}else{t.used=[];buzz([60,40,60])}}
+  render()});
+document.addEventListener('input',e=>{if(e.target.id==='sl'&&LT){LT.val=+e.target.value;const s=$('#sv');if(s)s.textContent=LT.val}});
+let dragging=false;
+document.addEventListener('pointerdown',e=>{const b=e.target.closest('[data-hold]');if(b)startHold(b);
+  if(e.target.id==='dh'&&LT&&LT.type==='drag'){dragging=true;try{e.target.setPointerCapture(e.pointerId)}catch(x){}e.preventDefault()}
+  if(e.target.id==='peek'){S.peek=true;render();buzz(30)}});
+document.addEventListener('pointermove',e=>{if(!dragging||!LT||LT.type!=='drag')return;const tr=$('#dtr');if(!tr)return;const r=tr.getBoundingClientRect();LT.pos=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));const h=$('#dh');if(h)h.style.left='calc('+LT.pos*100+'% - 22px)'});
+['pointerup','pointercancel'].forEach(t=>document.addEventListener(t,()=>{
+  if(dragging){dragging=false;if(LT&&LT.type==='drag'){if(Math.abs(LT.pos-LT.tg)<=.08){fin();return}LT.pos=0;LT.msg='Missed the slot. Try again.';buzz([60,40,60]);render()}}
+  endHold();if(S.peek){S.peek=false;if(S.scr==='reveal')render()}}));
+document.addEventListener('mouseover',e=>{const c=e.target.closest&&e.target.closest('[data-cell]');if(c&&LT&&LT.type==='scan')scanCell(+c.dataset.cell,c)});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&S.peek){S.peek=false;if(S.scr==='reveal')render()}});
+document.addEventListener('contextmenu',e=>{if(e.target.closest('#peek,[data-hold]'))e.preventDefault()});
+/* hover tooltips (mouse only) */
+if(matchMedia('(hover:hover)').matches){const T=$('#tip'),at=e=>{T.style.left=Math.min(innerWidth-260,e.clientX+14)+'px';T.style.top=(e.clientY+16)+'px'};
+  document.addEventListener('mouseover',e=>{const t=e.target.closest&&e.target.closest('[data-tip]');if(t&&t.dataset.tip){T.textContent=t.dataset.tip;T.style.display='block';at(e)}else T.style.display='none'});
+  document.addEventListener('mousemove',e=>{if(T.style.display==='block')at(e)});document.addEventListener('click',()=>{T.style.display='none'})}
+/* keyboard shortcuts */
+function click(sel){const b=document.querySelector(sel);if(b&&!b.disabled){b.click();return true}return false}
+function route(e){const k=e.key,scr=S.scr;
+  if(k==='?'){S.help=!S.help;render();return true}
+  if(scr==='home'||scr==='lobby'||scr==='results'||scr==='reveal'||!G)return false;
+  if(scr==='play'||scr==='ghost'){
+    if(LT){if(k==='Escape')return click('[data-a=back]');
+      if(k===' '){const h=document.querySelector('[data-hold]');if(h){if(!e.repeat)startHold(h);return true}return click('[data-a=tap]')||click('[data-a=stop]')||click('[data-a=lock]')}
+      if(k==='Enter')return click('[data-a=lock]')||click('[data-a=stop]');
+      if(/^[0-9]$/.test(k)){if(LT.type==='seq')return click('[data-a=n'+k+']');if(LT.type==='memory'||LT.type==='code')return click('[data-a=k'+k+']');if(LT.type==='sort')return click('[data-a=s'+(+k-1)+']')}
+      if(k==='Backspace'&&(LT.type==='memory'||LT.type==='code'))return click('[data-a=kc]');return false}
+    if(G.mypair){if(k===' '){const h=document.querySelector('[data-hold]');if(h){if(!e.repeat)startHold(h);return true}}if(k==='Escape')return click('[data-a=pcancel]');return false}
+    if(/^Digit[1-3]$/.test(e.code))return click('[data-a='+(e.shiftKey?'p':'t')+(+e.code[5]-1)+']');
+    if(k==='j'||k==='J')return click('[data-a^=pj]');
+    if(k===' '){const h=document.querySelector('[data-hold=fix]');if(h){if(!e.repeat)startHold(h);return true}return false}
+    if(S.confirm){if(k==='y'||k==='Y'||k==='Enter')return click('[data-a=meet]');if(k==='n'||k==='N'||k==='Escape')return click('[data-a=no]');return false}
+    if(k==='m'||k==='M')return click('[data-a=ask]');
+    if(k==='s'||k==='S')return click('[data-a=sab]');
+    if(k==='a'||k==='A')return click('[data-atk]:not([disabled])');
+    if(k==='c'||k==='C'){const i=document.querySelector('input[data-ch]');if(i){i.focus();return true}}
+    return false}
+  if(scr==='meeting'){if(k==='c'||k==='C'){const i=document.querySelector('input[data-ch]');if(i){i.focus();return true}}
+    const vs=[...document.querySelectorAll('[data-v]')].filter(x=>x.dataset.v!=='skip');if(/^[1-9]$/.test(k)&&vs[+k-1]){vs[+k-1].click();return true}if(k==='0')return click('[data-v=skip]')}
+  return false}
+document.addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey||e.altKey)return;const t=e.target,typing=t&&((t.tagName==='INPUT'&&t.type!=='range')||t.tagName==='TEXTAREA');
+  if(typing){if(e.key==='Escape')t.blur();else if(e.key==='Enter'){if(t.dataset.ch){e.preventDefault();sayNow(t.dataset.ch)}else if(t.id==='ap'){e.preventDefault();click('[data-a=login]')}else if(t.id==='au'){e.preventDefault();const p=$('#ap');if(p)p.focus()}}return}
+  if(route(e)){e.preventDefault();if(e.key===' '&&document.activeElement&&document.activeElement.blur)document.activeElement.blur()}});
+document.addEventListener('keyup',e=>{if(e.key===' '&&hold){endHold();e.preventDefault()}});
+let last=performance.now();setInterval(()=>{const n=performance.now(),dt=(n-last)/1000;last=n;if(!G)return;
+  if(G.ph==='play'){G.left-=dt;G.mcd=Math.max(0,G.mcd-dt);G.sabCd=Math.max(0,G.sabCd-dt);if(G.sab)G.sab.left-=dt;if(G.ab&&G.ab.cd>0)G.ab.cd-=dt;if(G.atk&&G.atk.cd>0)G.atk.cd-=dt;if(G.down)G.down.left-=dt;G.downs.forEach(d=>d.left-=dt)}
+  if(G.phase){G.phase.left-=dt;const e=$('#mt');if(e)e.textContent=fmt(G.phase.left)}
+  if(hold){const p=Math.min(1,(n-hold.t0)/hold.ms),f=$('#hf');if(f)f.style.width=p*100+'%';if(p>=1)holdDone()}
+  hud()},250);
+/* ============ INSTALL, OFFLINE, SCREEN WAKE ============ */
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();S.inst=e;if(S.scr==='home')render()});
+addEventListener('appinstalled',()=>{S.inst=null;toast('Installed');if(S.scr==='home')render()});
+addEventListener('offline',()=>toast('You are offline. The game will reconnect.'));addEventListener('online',()=>{toast('Back online');if(ws&&ws.readyState!==1)connect()});
+if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1'))addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+let wl=null;async function wake(on){try{if(on&&!wl&&navigator.wakeLock&&!document.hidden){wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>{wl=null})}else if(!on&&wl){await wl.release();wl=null}}catch(e){wl=null}}
+setInterval(()=>wake(!!G&&['reveal','play','meeting','eject'].includes(G.ph)),4000);
+render();if(ld('token')&&ld('code'))connect();else if(ld('au')&&ld('as'))connect();
+</script></body></html>
