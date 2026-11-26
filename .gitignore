@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Runtime data (player accounts, rooms, match logs, replays) - never commit
+accounts.json
+rooms.json
+matches.jsonl
+replays.jsonl
+replays.jsonl.old
+moderation.json
+
+# Secrets / local config
+.env
+
+# Build output
+dist/
+*.exe
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+desktop.ini

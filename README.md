@@ -1,3 +1,45 @@
+# Traitor in the Room
+
+A real-time multiplayer **social-deduction game** for phones and PCs. Players join a room, complete short mini-tasks, and try to work out who the traitor is, with phone and PC players in the same match.
+
+> Status: in active development (v0.8.0).
+
+## Highlights
+- **Cross-play rooms**: phone (installable PWA) and PC players play together in the same room
+- **Signature mini-tasks** built around the game's theme: memory, lies, alibis and feel, each a few seconds long
+- **Accounts and sign-in**: game accounts (salted scrypt password hashes) and Google sign-in, with a nickname and avatar for every player
+- **Credits and cosmetic shop**: avatar rings and name titles, with all purchases checked on the server
+- **Creator dashboard**: live stats, accounts, moderation, and a read-only match replay viewer
+- **Extras**: sound and haptics, shareable result images, Windows installer and an Android (TWA) path
+
+## Tech stack
+Node.js · WebSockets (`ws`) · Vanilla JavaScript front end · PWA (service worker, web manifest) · Electron (Windows desktop build)
+
+## Quick start
+```bash
+npm install
+npm start          # http://localhost:8080
+npm test           # runs the automated test suite
+```
+
+## Configuration
+Secrets and options are read from environment variables, nothing is hardcoded:
+
+| Variable | Purpose |
+|---|---|
+| `PORT` | Server port (default 8080) |
+| `ADMIN_TOKEN` | Turns on the creator dashboard at `/admin` (it is off without this) |
+| `GOOGLE_CLIENT_ID` | Enables Google sign-in |
+| `DATA_DIR` | Where accounts, rooms and match logs are stored |
+| `SENTRY_DSN` | Optional error reporting |
+
+Runtime data files (`accounts.json`, `rooms.json`, `matches.jsonl`) are git-ignored.
+
+---
+
+## Development notes
+The sections below are the per-stage change log.
+
 ## Part 2 (v0.8.0): credits and shop, replays, match settings, image reports, Windows installer
 
 **Match length and tasks (lobby).** The host gets a length stepper (2:00 to 7:00 in 30 s steps) and a tasks stepper (1 to 5 per player) in the lobby. Everyone sees the change at once, and the tags at the top of the lobby update. *Auto* on the length goes back to the Classic-mode default (4:00, or 3:00 in fast-and-loud). The server validates and clamps both values, only the host can change them, and they are fixed once the match starts. Keys 1 to 5 start tasks on PC. Sabotage and meeting counts still come from Classic mode.
